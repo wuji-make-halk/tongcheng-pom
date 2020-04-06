@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.OrderThirdApiMapper">
+ 
+	<sql id="OrderThirdApiColumns">
+		o.order_third_id as orderThirdId,
+		o.cus_id as cusId,
+		o.third_price as thirdPrice,
+		o.total_amoun as totalAmoun,
+		o.vin as vin
+	</sql>
+ 
+ 	<!-- 保存OrderThirdApi -->
+    <insert id="insertOrderThirdApi">
+		insert into  order_third (order_third_id,cus_id,third_price,gmt_create,total_amoun,vin)
+		values (#{orderThirdId},#{cusId},#{thirdPrice},#{gmtCreate},#{totalAmoun},#{vin})
+	</insert>
+ 
+	<!-- 根据id删除OrderThirdApi -->
+	<update id="deleteOrderThirdApiById">
+		update order_third
+		set 
+			is_deleted = 1
+		where
+			order_third_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改OrderThirdApi -->
+	<update id="updateOrderThirdApiById">
+		update  order_third set
+		  		 cus_id = #{cusId},
+		 		 third_price = #{thirdPrice},
+		 		 third_num = #{thirdNum},
+		 		 total_amoun = #{totalAmoun},
+		 		 vin = #{vin}	 
+		where order_third_id = #{orderThirdId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="orderThirdApiList" resultType="com.micro.pmo.moudle.third.entity.OrderThird">
+		SELECT
+			<include refid="OrderThirdApiColumns"/>
+		FROM
+			 order_third as o
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getOrderThirdApiById" resultType="com.micro.pmo.moudle.third.entity.OrderThird">
+		SELECT
+			<include refid="OrderThirdApiColumns"/>
+		FROM
+			 order_third as o
+		WHERE 
+			order_third_id = #{value}
+	</select>
+
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CollectCarMapper">
+ 
+	<sql id="CusCollectCarColumns">
+		c.collect_id as collectId,
+		c.expiration_date as expirationDate,
+		c.cus_id as cusId,
+		c.create_time as createTime,
+		c.cus_collect_status as cusCollectStatus,
+		c.buyer as buyer
+	</sql>
+ 
+ 	<!-- 保存CusCollectCar -->
+    <insert id="insertCollectCar" parameterType="com.micro.pmo.moudle.car.entity.CollectCar">
+		insert into  cus_collect_car (expiration_date,cus_id,create_time)
+		values (#{expirationDate},#{cusId},#{createTime})
+	</insert>
+ 
+ 	<!-- 根据id修改CusCollectCar -->
+	<update id="updateExpirationDateById" parameterType="com.micro.pmo.moudle.car.entity.CollectCar">
+		update  cus_collect_car set
+		  		 expiration_date = #{expirationDate}
+		where collect_id = #{collectId}
+ 	
+ 	</update>
+	<!-- 根据id获取 -->
+	<select id="getCollectCarByCusId" resultType="com.micro.pmo.moudle.car.entity.CollectCar">
+		SELECT
+			<include refid="CusCollectCarColumns"/>
+		FROM
+			 cus_collect_car as c
+		WHERE 
+			c.cus_id = #{cusId}
+		and
+			c.cus_collect_status = 0
+	</select>
+
+</mapper>

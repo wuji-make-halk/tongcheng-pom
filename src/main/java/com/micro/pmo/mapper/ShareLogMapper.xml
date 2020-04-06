@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.ShareLogMapper">
+
+	<sql id="shareLogColumnsNotA">
+		share_log_id as shareLogId,
+		cus_id as cusId,
+		share_url as shareUrl,
+		share_time as shareTime
+	</sql>
+	<!-- 保存分享记录 -->
+	<insert id="insertShareLong" parameterType="com.micro.pmo.moudle.share.entity.ShareLog" useGeneratedKeys="true" keyProperty="shareLogId">
+		INSERT INTO share_log(cus_id,share_url,share_time) 
+						VALUES(#{cusId},#{shareUrl},#{shareTime});
+	</insert>
+	
+	<!-- 查询本周分享总条数 -->
+	<select id="weekCount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(1) AS counts
+		FROM
+			share_log
+		WHERE 1=1
+			<if test="cusIds != null and cusIds.size > 0">
+				AND cus_id IN
+				<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			   </foreach>
+			</if>
+			 <if test="cusId != null">
+			 	AND cus_id = #{cusId}
+			 </if>
+		<if test="minDate != null and maxDate != null">
+			AND share_time BETWEEN #{minDate} AND #{maxDate}
+		</if>
+		LIMIT 0,1;
+	</select>
+	<!-- 微店排名 -->
+	<select id="findShareLog" resultType="com.micro.pmo.moudle.share.vo.ShareLogVo">
+		SELECT
+			COUNT(s.share_log_id) AS counts,
+			c.cus_nick AS cusNick,
+			c.cus_avatar AS cusAvatar
+		FROM
+			share_log AS s
+		LEFT JOIN customer AS c ON s.cus_id = c.cus_id
+		WHERE 1=1
+			<if test="cusIds != null and cusIds.size > 0">
+				AND s.cus_id IN
+				<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			   </foreach>
+			</if>
+		<if test="minDate != null and maxDate != null">
+			AND s.share_time BETWEEN #{minDate} AND #{maxDate}
+		</if>
+		GROUP BY
+			s.cus_id
+		ORDER BY counts DESC
+		
+	</select>
+	
+	<!-- 获取最新分享浏览头像 -->
+	<select id="getShareCusHead" resultType="java.lang.String">
+		SELECT
+			cus_head AS cusHead
+		FROM
+			`share` AS s
+		LEFT JOIN share_browse AS b ON s.share_id = b.share_id
+		WHERE
+			s.cus_id = #{cusId}
+		ORDER BY b.create_time DESC
+		LIMIT 0,1
+	</select>
+
+</mapper>

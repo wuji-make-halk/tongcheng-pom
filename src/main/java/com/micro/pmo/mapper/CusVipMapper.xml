@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CusVipMapper">
+
+ 	<sql id="CusVipColumns">
+			c.cus_vip_id as cusVipId,
+			c.vip_expiration_date as vipExpirationDate,
+			c.order_id as orderId,
+			c.cus_id as cusId,
+			c.create_time as createTime,
+			c.cus_vip_status as cusVipStatus,
+			c.buyer as buyer,
+			c.vip_id as vipId 
+	</sql>
+ 	
+ 	<!-- 插入vip记录 -->
+    <insert id="insertCusVip" parameterType="com.micro.pmo.moudle.customer.entity.CusVip">
+		insert into  cus_vip(vip_expiration_date,order_id,cus_id,create_time,cus_vip_status,buyer,vip_id)
+					values(#{vipExpirationDate},#{orderId},#{cusId},#{createTime},#{cusVipStatus},#{buyer},#{vipId})
+	</insert>
+ 	
+  
+ 
+  <!-- 根据id更新vip有效时间 -->
+	<update id="updateVipExpirationDateById" parameterType="com.micro.pmo.moudle.customer.entity.CusVip" >
+		update  cus_vip set
+		    vip_expiration_date = #{vipExpirationDate}
+		where cus_vip_id = #{cusVipId}
+	</update>
+ 
+ 	<!-- 根据cusId获取vip结束时间 -->
+	<select id="getEndDate"  resultType="java.util.Date">
+		select 
+			vip_expiration_date 
+		from cus_vip 
+		where cus_vip_status = 0 
+			and buyer = #{cusId} limit 0,1
+	</select>
+ 	<!-- 根据UserId获取有效记录 -->
+ 	<select id="getValidCusVip"  resultType="com.micro.pmo.moudle.customer.entity.CusVip">
+		select 
+			<include refid="CusVipColumns"/> 
+		from cus_vip as c 
+		where c.cus_vip_status = 0 
+			and c.buyer = #{cusId} limit 0,1
+	</select>
+	<!-- 获取用户 -->
+ 	<select id="getCusByCusId" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+ 		SELECT
+			c.cus_id AS cusId,
+			c.cus_phone AS cusPhone,
+			c.cus_nick AS cusNick,
+			c.cus_avatar AS cusAvatar,
+			c.cus_name AS cusName,
+			c.cus_status AS cusStatus,
+			c.cus_reg_time AS cusRegTime,
+			c.cus_token AS cusToken,
+			c.province_name AS provinceName,
+			c.city_name AS cityName,
+			s.store_id AS storeId,
+			s.cus_type AS cusType
+		FROM
+			customer AS c
+		LEFT JOIN cus_store AS s ON s.cus_id = c.cus_id
+		WHERE
+			c.cus_id = #{cusId}
+		AND cus_status = 0
+ 	</select>
+ 	
+ 
+</mapper>

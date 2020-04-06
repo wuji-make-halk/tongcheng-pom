@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.ThirdApiResultMapper">
+ 
+	<sql id="ThirdApiResultColumns">
+		t.result_id as resultId,
+		t.cus_id as cusId,
+		t.car_vin as carVin,
+		t.result as result,
+		t.gmt_create as gmtCreate,
+		t.result_type as resultType,
+		t.order_id as orderId,
+		t.pay_order_id as payOrderId,
+		t.res_code as resCode,
+		t.res_status as resStatus,
+		t.buy_type as buyType
+	</sql>
+ 
+ 	<!-- 保存ThirdApiResult -->
+    <insert id="insertThirdApiResult" useGeneratedKeys="true" keyColumn="result_id" keyProperty="resultId">
+		insert into  third_api_result (cus_id,car_vin,result,gmt_create,result_type,order_id,pay_order_id,res_code,res_status,buy_type)
+		values (#{cusId},#{carVin},#{result},#{gmtCreate},#{resultType},#{orderId},#{payOrderId},#{resCode},#{resStatus},#{buyType})
+	</insert>
+ 
+	<!-- 根据id删除ThirdApiResult -->
+	<update id="deleteThirdApiResultById">
+		update third_api_result
+		set 
+			is_deleted = 1
+		where
+			result_id = #{value}
+			
+	</update>
+ 
+ 	<!-- 根据id修改ThirdApiResult -->
+	<update id="updateThirdApiResultById">
+		update  third_api_result set
+		 		 result = #{result},
+		 		 pay_order_id = #{payOrderId},
+		 		 res_code = #{resCode},
+		 		 res_status = #{resStatus}		 
+		where result_id = #{resultId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="thirdApiResultList" resultType="com.micro.pmo.moudle.third.entity.ThirdApiResult">
+		SELECT
+			<include refid="ThirdApiResultColumns"/>
+		FROM
+			 third_api_result as t
+		<where>
+			<if test="vin != null and vin != ''">
+				and t.car_vin like concat('%',#{vin},'%')
+			</if>
+			<if test="resultType != null ">
+				and t.result_type = #{resultType}
+			</if>
+			<if test="cusId != null ">
+				and t.cus_id = #{cusId}
+			</if>
+		</where>
+		order by gmt_create desc 
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getThirdApiResultById" resultType="com.micro.pmo.moudle.third.entity.ThirdApiResult">
+		SELECT
+			<include refid="ThirdApiResultColumns"/>
+		FROM
+			 third_api_result as t
+		WHERE 
+			result_id = #{value}
+	</select>
+
+	<select id="getThirdApiResult" resultType="com.micro.pmo.moudle.third.entity.ThirdApiResult">
+		select 
+		<include refid="ThirdApiResultColumns"/>
+		from 
+			third_api_result as t 
+		<where>
+			<if test ="resStatus != null ">
+				and t.res_status = #{resStatus}
+			</if>
+	 		<if test="maxDay !=null">
+				and  DATE_SUB(CURDATE(), INTERVAL #{maxDay} DAY) &lt;= date(t.gmt_create)
+			</if>
+			<if test="cusId != null">
+				and
+				t.cus_id = #{cusId}
+			</if>
+			<if test="carVin != null">
+				and t.car_vin = #{carVin}
+			</if>
+			<if test="resultType != null">
+				and
+				t.result_type = #{resultType}
+			</if>
+			<if test="orderId != null">
+				and
+				t.order_id = #{orderId}
+			</if>
+			<if test="payOrderId != null and payOrderId != '' ">
+				and
+					t.pay_order_id = #{payOrderId}
+			</if>
+		</where>
+		order by t.gmt_create desc
+		limit 1
+	</select>
+
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.StoreCarMapper">
+
+	<sql id="storeCarColumnsNotA">
+		store_car_id as storeCarId,
+		store_id as storeId,
+		car_id as carId,
+		creator as creator,
+		create_time as createTime
+	</sql>
+
+	<!-- 写入微店和车辆中间表 -->
+	<insert id="insertStoreCar" parameterType="com.micro.pmo.moudle.store.entity.StoreCar">
+		INSERT INTO store_car (store_id,car_id,creator,create_time)
+						VALUES(#{storeId},#{carId},#{creator},#{createTime});
+	</insert>
+	
+	<!-- 通过微店id和车id查找中间表信息 -->
+	<select id="findCarIdsByCusId" resultType="java.lang.Integer">
+		SELECT
+			car_id AS carId
+		FROM
+			car_info
+		WHERE
+			micro_shop = 1
+		AND del_flag = 0
+		AND creator = #{cusId}
+
+	</select>
+	<!-- 通过微店id和关键字查询列表 -->
+	<select id="storeCarByIdAndKey" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+		SELECT
+			c.car_id AS carId,
+			c.brand_series AS brandSeries,
+			c.car_mileage AS carMieage,
+			c.car_old_boad_time as carOldBoadTime,
+			c.province_location AS provinceLocation,
+			c.city_location AS cityLocation,
+			c.car_mileage AS carMieage,
+			c.inter_price AS interPrice,
+			c.cost_price AS costPrice,
+			c.car_img1 AS carImg1,
+			c.create_time AS createTime
+		FROM
+			store_car AS s
+		LEFT JOIN car_info AS c ON c.car_id = s.car_id
+		WHERE
+			del_flag = 0
+		AND s.store_id = #{storeId}
+		AND c.car_status = 1
+		AND c.micro_shop = 1
+		<if test="keyword != null and keyword != ''">
+			AND c.brand_series LIKE concat('%',#{keyword},'%')
+		</if>
+		<if test="carIds != null and carIds != ''">
+			AND FIND_IN_SET(s.car_id,#{carIds})
+		</if>
+		GROUP BY s.car_id
+		ORDER BY
+			c.create_time DESC
+	</select>
+	<!-- 微店条数 -->
+	<select id="getStoreCarSizeById" resultType="java.lang.Integer">
+		SELECT
+			COUNT(c.car_id) AS carIds
+		FROM
+			store_car AS s
+		LEFT JOIN car_info AS c ON c.car_id = s.car_id
+		WHERE
+			del_flag = 0
+		AND s.store_id = #{storeId}
+		AND c.car_status = 1
+		AND c.micro_shop = 1
+	</select>
+	
+	<!-- 获取车辆id对应的微店id -->
+	<select id="getStoreIdByCarId" resultType="java.lang.Integer">
+		select
+			store_id
+		from
+			store_car
+		where
+			car_id = #{carId}
+		limit 0,1
+	</select>
+	<!-- 查询是否发布到微店 -->
+	<select id="getStoreIdByAll" resultType="com.micro.pmo.moudle.store.entity.StoreCar">
+		SELECT
+			<include refid="storeCarColumnsNotA"/>
+		FROM
+			store_car
+		WHERE
+			car_id = #{carId}
+		AND store_id = #{storeId}
+		LIMIT 0,1
+	</select>
+</mapper>

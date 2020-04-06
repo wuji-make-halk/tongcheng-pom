@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CarBidMapper">
+
+	<sql id="carBidColumnsNotA">
+		bid_id as bidId,
+		bin_price as binPrice,
+		car_id as carId,
+		creator as creator,
+		create_time as createTime
+	</sql>
+
+	<!--添加出价信息-->
+	<insert id="insertBid" parameterType="com.micro.pmo.moudle.car.entity.CarBid">
+		INSERT INTO car_bid
+			(bin_price,car_id,creator,create_time)
+		VALUES
+			(#{binPrice},#{carId},#{creator},#{createTime})
+	</insert>
+
+
+	<!--获取出价列表-->
+	<select id="getBidlistByCarIds" resultType="com.micro.pmo.moudle.car.vo.BidVo">
+	SELECT
+		a.bin_price as binPrice,
+		a.bid_id as bidId,
+		a.creator as creator,
+		b.car_id as carId,
+		b.car_type as carType,
+		b.brand_series as brandSeries,
+		b.car_color as carColor,
+		b.car_mileage as carMileage,
+		b.car_old_boad_time as carOldBoadTime,
+		b.province_location as provinceLocation,
+		b.city_location as cityLocation,
+		b.car_img1 as carImg1,
+		b.inter_price as interPrice,
+		b.cost_price as costPrice
+	FROM
+		car_bid AS a
+	LEFT JOIN
+		car_info as b ON a.car_id = b.car_id
+	WHERE
+		a.car_id IN 
+		<foreach collection="carIds" item="item"  open="(" close=")" separator=",">
+			      #{item}
+		</foreach>
+	GROUP BY
+		a.car_id
+	ORDER BY
+		a.create_time DESC
+	
+	</select>
+
+	<!--根据车辆id获取车辆信息-->
+	<select id="getCarInfoById" resultType="com.micro.pmo.moudle.car.entity.Car">
+		SELECT
+			b.inter_price AS inter_price,
+			b.car_id AS carId,
+			b.car_type AS carType,
+			b.brand_series AS brandSeries,
+			b.car_color AS carColor,
+			b.car_mileage AS carMileage,
+			b.car_old_boad_time AS carOldBoadTime,
+			b.province_location AS provinceLocation,
+			b.city_location AS cityLocation,
+			b.car_discharge AS carDischarge,
+			b.car_describe AS carDescribe,
+			b.fuel_type AS fuelType,
+			b.create_time as createTime,
+			b.car_img1 AS carImg1,
+			b.car_img2 AS carImg2,
+			b.car_img3 AS carImg3,
+			b.update_time as updateTime
+		FROM
+			car_info as b
+		WHERE b.car_id = #{carId}
+	</select>
+
+	<!--获取出价人的信息列表-->
+	<select id="getBidCustomer" resultType="com.micro.pmo.moudle.car.vo.BidCustomerVo">
+		SELECT
+			b.cus_phone AS phone,
+			b.cus_nick AS cusNick,
+			a.bin_price AS price
+		FROM
+			car_bid AS a
+			LEFT JOIN customer AS b ON a.creator = b.cus_id
+		WHERE
+			a.car_id = #{carId}
+		ORDER BY
+			a.create_time DESC
+	</select>
+
+
+
+</mapper>

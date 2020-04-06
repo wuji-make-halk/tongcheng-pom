@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.OrderDepositMapper">
+ 
+	<sql id="OrderDepositColumns">
+		o.order_deposit_id as orderDepositId,
+		o.money as money,
+		o.cus_id as cusId,
+		o.car_id as carId,
+		o.gmt_create as gmtCreate,
+		o.buyer_order_id as buyerOrderId,
+		o.status as status,
+		o.type as type,
+		o.order_id as orderId
+	</sql>
+ 
+ 	<sql id="orderColumnsNotA">
+		c.order_id as orderId,
+		c.order_money as orderMoney,
+		c.payment_type as paymentType,
+		c.cus_id as cusId,
+		c.weixin_prepay_id as weixinPrepayId,
+		c.weixin_transaction_id as weixinTransactionId,
+		c.weixin_refund_id as weixinRefundId,
+		c.alipay_pay_id as alipayPayId,
+		c.order_status as orderStatus,
+		c.refund_amount as refundAmount,
+		c.createTime as createTime,
+		c.finish_time as finishTime,
+		c.refund_time as refundTime,
+		c.payment_mode as paymentMode,
+		c.service_charge as serviceCharge,
+		c.create_ip as createIp,
+		c.order_remark as orderRemark,
+		c.order_id as orderId,
+		cus.cus_nick as cusNick,
+		cus.cus_phone as cusPhone
+	</sql>
+ 
+ 	<!-- 保存OrderDeposit -->
+    <insert id="insertOrderDeposit">
+		insert into  order_deposit (order_deposit_id,money,cus_id,car_id,gmt_create,status,type,buyer_order_id,order_id)
+		values (#{orderDepositId},#{money},#{cusId},#{carId},#{gmtCreate},#{status},#{type},#{buyerOrderId},#{orderId})
+	</insert>
+ 
+	<!-- 根据id删除OrderDeposit -->
+	<update id="deleteOrderDepositById">
+		update order_deposit
+		set 
+			is_deleted = 1
+		where
+			order_deposit_id = #{value}
+	</update>
+  	
+  	<!-- 更新定金状态 -->
+  	<update id="updateDepositStatus">
+  		update
+  			order_deposit
+  		set
+  			status = #{status}
+  		where
+  			order_deposit_id = #{orderDepositId}
+  	</update>
+ 
+	<!-- 根据用户id 车辆id更新状态 -->
+	<update id="updateStatus">
+		update
+  			order_deposit
+  		set
+  			status = #{status}
+  		where
+  			order_deposit_id = #{orderId}
+	</update>
+ 
+	<!-- 根据条件获取订单附属记录 -->
+	<select id="getOrderDeposit" resultType="com.micro.pmo.moudle.car.entity.OrderDeposit">
+		select
+			<include refid="OrderDepositColumns" />
+		from
+			order_deposit as o
+		<where>
+			<if test="status != null ">
+				and	status = #{status}
+			</if>
+			<if test="carId != null ">
+				and car_id = #{carId}
+			</if>
+			<if test="type != null">
+				and type = #{type}
+			</if>
+		</where>
+	</select>
+	
+  	<!-- 买方定金列表 -->
+  	<select id="listBuyerDepositOrder" resultType="com.micro.pmo.moudle.car.admin.vo.AdminDepositOrderVO">
+  		select
+  			o.order_deposit_id as orderDepositId,
+			o.money as money,
+			o.cus_id as cusId,
+			o.car_id as carId,
+			o.gmt_create as gmtCreate,
+			o.buyer_order_id as buyerOrderId,
+			o.status as status,
+			o.type as type,
+			o.order_id as comOrderId,
+			c.service_charge as serviceCharge,
+  			<include refid="orderColumnsNotA"/>,
+  			o.status as dealStatus,
+  			cus.cus_nick as cusNick,
+			cus.cus_phone as cusPhone
+  		from
+  			cus_order  as c
+  		inner join
+			 customer as cus	
+		on
+			(
+				c.cus_id = cus.cus_id
+				<if test="cusPhone !=null and cusPhone != ''">
+			and cus.cus_phone like concat('%',#{cusPhone},'%')
+				</if>
+				<if test="cusName != null and cusName != ''">
+			and	cus.cus_name like concat('%',#{cusName},'%')
+				</if>
+			<if test="cityName != null and cityName != '' and cityName !='all' and cityName != '全国'">
+			and	cus.city_name = #{cityName}
+				</if>	
+			)
+  		inner join 
+  			order_deposit as o
+  		on(
+  			c.order_id = o.order_deposit_id
+  		)
+  		where
+			payment_type = 7
+		and
+			o.type = 0
+			<if test="orderStatus != null ">
+				and c.order_status = #{orderStatus}
+			</if>
+			<if test="orderPayMode != null ">
+				and c.payment_mode = #{orderPayMode}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				and c.order_id LIKE CONCAT('%',#{orderId},'%')
+			</if>
+			<choose>
+				<when test="queryEnd != null and queryStart != null">
+					and unix_timestamp(c.createTime) &lt; unix_timestamp(#{queryEnd}) 
+					and unix_timestamp(c.createTime) &gt; unix_timestamp(#{queryStart})
+				</when>
+				<otherwise>
+					<if test="queryEnd !=null and queryStart ==null ">
+						and unix_timestamp(c.createTime) &lt; unix_timestamp(#{queryEnd})
+					</if>
+					<if test="queryEnd ==null and queryStart !=null ">
+						and unix_timestamp(c.createTime) &gt; unix_timestamp(#{queryStart})
+					</if>
+				</otherwise>
+			</choose>
+		order by c.createTime desc
+  	</select>
+  	
+  		<!-- 根据id获取定金订单详情 -->
+	<select id="getOrderDepositInfoByOrderId" resultType="com.micro.pmo.moudle.car.admin.vo.AdminDepositOrderVO">
+		SELECT
+		<include refid="orderColumnsNotA" />,
+			<include refid="OrderDepositColumns"/>,
+  			o.status as dealStatus,
+			o.type as type,
+			o.car_id as carId
+		FROM
+			 order_deposit as o
+		inner join 
+			cus_order as c
+		on(
+  			o.order_deposit_id = c.order_id
+  		)
+  		inner join 
+  			customer as cus
+  		on(
+  			cus.cus_id = o.cus_id
+  		)
+		WHERE 
+			 order_deposit_id = #{orderId}
+	</select>
+	
+	<!-- 根据车辆id获取买家定金订单详情 -->
+  	<select id="getTradingBuyerOrderDepositByCarId"  resultType="com.micro.pmo.moudle.car.entity.OrderDeposit">
+  		select
+  			<include refid="OrderDepositColumns"/>
+  		from
+  			order_deposit as o 
+  		where
+  		(
+  			o.status = 0
+  		or
+  			o.status = 1
+  	 	)and o.car_id = #{carId}
+  	 	and o.type = 0
+  	 	limit 1
+   	</select>
+  	
+  	<!-- 根据买家定金ID获取卖家定金记录 -->
+  	<select id="getOrderDepositByOrderId" resultType="com.micro.pmo.moudle.car.entity.OrderDeposit">
+		SELECT
+			<include refid="OrderDepositColumns"/>
+		FROM
+			 order_deposit as o
+		WHERE 
+			 order_deposit_id = #{orderId}
+	</select>
+  	
+  	<!-- 根据买家定金ID获取卖家定金订单详情  -->
+  	<select id="getSellerDepositByBuyerOrderId" resultType="com.micro.pmo.moudle.car.admin.vo.AdminDepositOrderVO">
+  		select
+  			<include refid="orderColumnsNotA" />,
+  			o.status as dealStatus,
+			o.type as type,
+			o.car_id as carId
+  		from
+  			order_deposit as o
+  		INNER JOIN cus_order AS c ON ( o.order_deposit_id = #{orderId} AND o.order_deposit_id = c.order_id )
+  		inner join
+  			customer as cus
+  		on(
+  			cus.cus_id = c.cus_Id
+  		)
+  
+  	</select>
+
+	<!-- 根据订单ID和类型获取买家和卖家的订金信息 -->
+	<select id="getUserOrderDeposit" resultType="com.micro.pmo.moudle.car.vo.UserOrderDepositVO">
+		SELECT
+			cus.cus_nick AS cusName,
+			cus.cus_avatar AS cusHeadImg,
+			o_d.money AS depositPrice,
+			o_d.STATUS AS dealStatus,
+			o_d.type AS type,
+			o_d.order_deposit_id as orderId,
+			o_d.car_id as carId,
+			o_d.buyer_order_id as buyerOrderId,
+			o_d.cus_id as cusId,
+			o_d.gmt_create as gmtCreate,
+			o_d.order_id as commonOrderId
+		FROM
+			order_deposit as o_d
+			LEFT JOIN customer AS cus ON ( o_d.cus_id = cus.cus_id )
+		WHERE 
+	  	<if test="type == 0">
+	  		o_d.order_deposit_id = #{orderId}
+	  	</if>
+	  	
+	  	<if test="type == 1">
+	  		o_d.buyer_order_id = #{orderId}
+	  	</if>
+	  	limit 0,1
+	</select>
+	<select id="getOrderDepositOtherByOrderId" resultType="com.micro.pmo.moudle.car.entity.OrderDeposit">
+		SELECT
+			<include refid="OrderDepositColumns"/>
+		FROM
+			order_deposit as o
+		WHERE 
+	  	<if test="type == 0">
+	  		o.order_deposit_id = #{orderId}
+	  	</if>
+	  	<if test="type == 1">
+	  		o.buyer_order_id = #{orderId}
+	  	</if>
+	  	limit 0,1
+	
+	</select>
+
+	<!-- 获取用户的订金订单 -->
+	<select id="listUserOrderDeposit" resultType="com.micro.pmo.moudle.car.vo.UserOrderDepositVO">		
+		SELECT
+			cus.cus_nick AS cusName,
+			cus.cus_avatar AS cusHeadImg,
+			cus_order.order_id AS orderId,
+			car.car_img1 AS carImg,
+			car.brand_series AS brandSeries,
+			car.car_factory_time AS carFactoryTime,
+			car.car_mileage AS carMileage,
+			car.city_location AS cityLocation,
+			car.inter_price AS interPrice,
+			car.car_id as carId,
+			o_d.money AS depositPrice,
+			o_d.STATUS AS dealStatus,
+			o_d.type AS type,
+			o_d.order_id as commonOrderId,
+			car.car_old_boad_time as carOldBoadTime,
+			car.cost_price as costPrice
+		FROM
+			cus_order AS cus_order
+			inner JOIN customer AS cus ON ( cus_order.cus_id = cus.cus_id )
+			inner JOIN order_deposit AS o_d ON ( o_d.order_deposit_id = cus_order.order_id AND o_d.type = #{type} )
+			inner JOIN car_info AS car ON ( car.car_id = o_d.car_id) 
+		WHERE
+			cus_order.payment_type = 7 
+			AND cus_order.cus_id = #{cusId}
+		ORDER BY cus_order.createTime DESC
+	</select>
+	
+	<!-- 取消未支付订单根据车辆id -->
+	<update id="cancleNoPayOrderByCarId">
+		update
+			cus_order
+		set
+			order_status = #{status}
+		where
+			order_id in (
+				select
+					order_deposit_id
+				from
+					order_deposit
+				where
+					status = 3
+				and
+					car_id = #{carId}
+				and
+					type = 0 
+			)
+	</update>
+	
+	<!-- 取消未支付订金订单根据车辆id -->
+	<update id="cancleNoPayDepositByCarId">
+		update
+			order_deposit
+		set
+			status = 7
+		where
+			status = 3
+		and
+			car_id = #{carId}
+		and
+			type = 0 
+	</update>
+	
+	<!-- 获取订金订单状态 -->
+	<select id="getOtherStatusByOrderId" resultType="java.lang.Integer">
+		select
+			status
+		from
+			order_deposit  
+		where
+		<if test="type == 0">
+	  		order_deposit_id = #{orderId}
+	  	</if>
+	  	<if test="type == 1">
+	  		buyer_order_id = #{orderId}
+	  	</if>
+	  	limit 0,1
+	</select>
+</mapper>

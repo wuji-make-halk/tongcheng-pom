@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.BuyCarMapper">
+
+	<sql id="buyCarColumnsNotA">
+		buy_car_id as buyCarId,
+		car_type as carType,
+		car_colour as carColour,
+		factory_time as factoryTime,
+		boad_time as boadTime,
+		description as description,
+		phone as phone,
+		hope_price as hopePrice,
+		buy_status as buyStatus,
+		clinch_price as clinchPrice,
+		car_img1 as carImg1,
+		car_img2 as carImg2,
+		car_img3 as carImg3,
+		creator as creator,
+		create_time as createTime
+	</sql>
+		<!-- 写入数据 -->
+	<insert id="inserBuyCar" parameterType="com.micro.pmo.moudle.car.entity.BuyCar"  useGeneratedKeys="true" keyProperty="buyCarId">
+		INSERT INTO buy_car (car_type,factory_time,boad_time,description,phone,hope_price,buy_status,car_img1,car_img2,car_img3,creator,create_time,car_colour) 
+		VALUES(#{carType},#{factoryTime},#{boadTime},#{description},#{phone},#{hopePrice},#{buyStatus},#{carImg1},#{carImg2},#{carImg3},#{creator},#{createTime},#{carColour});
+	</insert>
+	<!-- 修改买车信息 -->
+	<update id="updateBuyCar" parameterType="com.micro.pmo.moudle.car.entity.BuyCar">
+		UPDATE buy_car SET
+			car_type = #{carType},
+			car_colour = #{carColour},
+			factory_time = #{factoryTime},
+			boad_time = #{boadTime},
+			description = #{description},
+			phone = #{phone},
+			hope_price = #{hopePrice},
+			car_img1 = #{carImg1},
+			car_img2 = #{carImg2},
+			car_img3 = #{carImg3}
+	  WHERE buy_car_id = #{buyCarId}
+	</update>
+	<!-- 查询详情 -->
+	<select id="buyCarInfo" resultType="com.micro.pmo.moudle.car.entity.BuyCar">
+		SELECT
+			<include refid="buyCarColumnsNotA"/>
+		FROM
+			buy_car
+		WHERE
+			buy_car_id = #{buyCarId}
+	</select>
+	<!-- 买车列表 -->
+	<select id="buyCarList" resultType="com.micro.pmo.moudle.car.entity.BuyCar">
+		SELECT
+			b.buy_car_id AS buyCarId,
+			b.car_type AS carType,
+			b.car_colour as carColour,
+			b.boad_time AS boadTime,
+			b.phone AS phone,
+			b.hope_price AS hopePrice,
+			b.buy_status AS buyStatus,
+			b.clinch_price AS clinchPrice,
+			b.creator AS creator,
+			b.create_time AS createTime,
+			c.cus_nick AS cusNike
+		FROM
+			buy_car AS b
+		LEFT JOIN customer AS c ON c.cus_id = b.creator
+		WHERE
+			b.creator IN
+			<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			  </foreach>
+		AND FIND_IN_SET(b.buy_status, #{buyStatus})
+		ORDER BY
+			b.create_time DESC
+	</select>
+	<!-- 修改买车状态 -->
+	<update id="updateBuyCarStatus">
+		UPDATE buy_car SET
+			buy_status = #{buyStatus}
+			<if test="clinchPrice != null">
+				,clinch_price = #{clinchPrice}
+			</if>
+		 WHERE buy_car_id = #{buyCarId}
+	</update>
+</mapper>

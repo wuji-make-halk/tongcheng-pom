@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.UserMapper">
+
+	<sql id="userColumnsNotA">
+		user_id as userId,
+		user_head_img as userHeadImg,
+		user_phone as userPhone,
+		login_name as loginName,
+		user_name as userName,
+		password as password,
+		user_type as userType,
+		province as province,
+		city as city,
+		user_status as userStatus,
+		creator as creator,
+		create_time as createTime,
+		address_code as addressCode
+	</sql>
+	
+	<sql id="userColumnsNotB">
+		user_id as userId,
+		user_head_img as userHeadImg,
+		user_phone as userPhone,
+		login_name as loginName,
+		user_name as userName,
+		user_type as userType,
+		province as province,
+		city as city,
+		user_status as userStatus,
+		address_code as addressCode
+	</sql>
+	<!-- 通过登录名找用户 -->
+	<select id="getUserByLoginName" resultType="com.micro.pmo.moudle.user.entity.User">
+		SELECT
+			<include refid="userColumnsNotA"/>
+		FROM
+			sys_user
+		WHERE
+			login_name = #{loginName}
+		AND user_status = 0	
+	</select>
+	<!-- 添加区域经理 -->
+	<insert id="insertUser" parameterType="com.micro.pmo.moudle.user.entity.User">
+		INSERT INTO sys_user(user_phone,user_head_img,login_name,user_name,password,user_type,province,city,user_status,creator,create_time,address_code)
+					VALUES(#{userPhone},#{userHeadImg},#{loginName},#{userName},#{password},#{userType},#{province},#{city},#{userStatus},#{creator},#{createTime},#{addressCode});
+	</insert>
+	<!-- 修改后台用户信息 -->
+	<update id="updateUser" parameterType="com.micro.pmo.moudle.user.entity.User">
+		UPDATE 
+			sys_user
+		SET 
+			<if test="userHeadImg != null and userHeadImg != ''">
+				user_head_img = #{userHeadImg},
+			</if>
+			<if test="userPhone != null and userPhone!= ''">
+				user_phone = #{userPhone},
+			</if>
+				login_name = #{loginName},
+			<if test="userName != null and userName != ''">
+				user_name = #{userName},
+			</if>
+			province = #{province},
+			city = #{city},
+			address_code = #{addressCode}
+		WHERE
+			user_id = #{userId}
+	</update>
+	<!-- 获取后台用户列表 -->
+	<select id="getUserList" parameterType="com.micro.pmo.moudle.user.vo.UserQueryVo" resultType="com.micro.pmo.moudle.user.entity.User">
+		SELECT
+			<include refid="userColumnsNotB"/>
+		FROM
+			sys_user
+		WHERE
+			user_status = #{userStatus}
+		<if test="userPhone != null and userPhone != ''">
+			AND user_phone LIKE CONCAT('%',#{userPhone},'%')
+		</if>	
+		<if test="loginName != null and loginName != ''">
+			AND login_name LIKE CONCAT('%',#{loginName},'%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND user_name = #{userName}
+		</if>
+		<if test="province != null and province != ''">
+			AND province = #{province}
+		</if>
+		<if test="city != null and city != ''">
+			AND city = #{city}
+		</if>
+		<if test="userType != null and userType != ''">
+			AND user_type = #{userType}
+		</if>
+		ORDER BY
+			create_time DESC
+	</select>
+	<!-- 通过id找用户 -->
+	<select id="getUserById" resultType="com.micro.pmo.moudle.user.entity.User">
+		SELECT
+			<include refid="userColumnsNotA"/>
+		FROM
+			sys_user
+		WHERE
+			user_id = #{userId}
+	</select>
+	<!-- 获取所有登录名 -->
+	<select id="getLoginNames" resultType="java.lang.String">
+		SELECT
+			login_name AS loginName
+		FROM
+			sys_user
+		<if test="userStatus != null">
+		WHERE
+			user_status = #{userStatus}
+		</if>
+	</select>
+	
+</mapper>

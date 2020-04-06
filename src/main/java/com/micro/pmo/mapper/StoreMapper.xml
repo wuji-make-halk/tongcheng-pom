@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.StoreMapper">
+
+	<sql id="storeColumnsNotA">
+		store_id as storeId,
+		store_name as storeName,
+		province_location as provinceLocation,
+		city_location as cityLocation,
+		county_location as countyLocation,
+		door_number as doorNumber,
+		store_notice as storeNotice,
+		store_photo as storePhoto,
+		store_phone as storePhone,
+		creator as creator,
+		create_time as createTime,
+		store_img1 as storeImg1,
+		store_img2 as storeImg2,
+		store_img3 as storeImg3
+	</sql>
+	<!-- 写入微店信息 -->
+	<insert id="insertStore" parameterType="com.micro.pmo.moudle.store.entity.Store"  useGeneratedKeys="true" keyProperty="storeId">
+		INSERT INTO store (store_name,province_location,city_location,county_location,door_number,store_notice,store_photo,store_phone,creator,create_time,store_img1,store_img2,store_img3)
+		VALUES (#{storeName},#{provinceLocation},#{cityLocation},#{countyLocation},#{doorNumber},#{storeNotice},#{storePhoto},#{storePhone},#{creator},#{createTime},#{storeImg1},#{storeImg2},#{storeImg3});
+	</insert>
+	<!-- 修改微店信息 -->
+	<update id="updateStore" parameterType="com.micro.pmo.moudle.store.entity.Store">
+		UPDATE store SET 
+			store_name = #{storeName},
+			province_location = #{provinceLocation},
+			city_location = #{cityLocation},
+			county_location = #{countyLocation},
+			door_number = #{doorNumber},
+			store_notice = #{storeNotice},
+			store_photo = #{storePhoto},
+			store_phone = #{storePhone},
+			store_img1 = #{storeImg1},
+			store_img2 = #{storeImg2},
+			store_img3 = #{storeImg3}
+		WHERE store_id = #{storeId}
+	</update>
+	<!-- 微店详情 -->
+	<select id="storeInfoByCus" resultType="com.micro.pmo.moudle.store.entity.Store">
+		SELECT
+			s.store_id as storeId,
+			s.store_name as storeName,
+			s.province_location as provinceLocation,
+			s.city_location as cityLocation,
+			s.county_location as countyLocation,
+			s.door_number as doorNumber,
+			s.store_notice as storeNotice,
+			s.store_photo as storePhoto,
+			s.store_phone as storePhone,
+			s.creator as creator,
+			s.create_time as createTime,
+			s.store_img1 as storeImg1,
+			s.store_img2 as storeImg2,
+			s.store_img3 as storeImg3,
+		FROM
+			store AS s
+		LEFT JOIN cus_store AS c ON c.cus_store_id = s.store_id
+		WHERE c.cus_id = #{cusId}
+	</select>
+	
+	<!-- 微店详情 -->
+	<select id="storeInfoById" resultType="com.micro.pmo.moudle.store.entity.Store">
+		SELECT
+			<include refid="storeColumnsNotA"/>
+		FROM
+			store
+		WHERE store_id = #{storeId}
+	</select>
+	<!-- 微店车辆详情微店信息 -->
+	<select id="getStoreCarInfoById" resultType="com.micro.pmo.moudle.store.vo.StoreCarInfoVo">
+		SELECT
+			store_id as storeId,
+			store_name as storeName,
+			store_photo as storePhoto
+		FROM
+			store
+		WHERE store_id = #{storeId}
+	</select>
+	
+</mapper>

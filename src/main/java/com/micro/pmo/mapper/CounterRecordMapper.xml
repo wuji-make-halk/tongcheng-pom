@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CounterRecordMapper">
+ 
+	<sql id="CounterRecordColumns">
+		c.record_id as recordId,
+		c.user_id as userId,
+		c.cus_id as cusId,
+		c.counter_type as counterType,
+		c.is_deleted as isDeleted,
+		c.gmt_create as gmtCreate,
+		c.config_id as configId,
+		c.send_num as sendNum,
+		c.operate_type as operateType
+	</sql>
+ 
+ 	<!-- 保存CounterRecord -->
+    <insert id="insertCounterRecord">
+		insert into  counter_record (user_id,cus_id,counter_type,gmt_create,config_id,send_num,operate_type,order_id)
+		values (#{userId},#{cusId},#{counterType},#{gmtCreate},#{configId},#{sendNum},#{operateType},#{orderId})
+	</insert>
+
+	<!-- 查询 -->
+	<select id="counterRecordList" resultType="com.micro.pmo.moudle.customer.entity.CounterRecord">
+		SELECT
+			<include refid="CounterRecordColumns"/>
+		FROM
+			 counter_record as c
+	</select>
+	
+	<!-- 获取最后一条赠送记录 -->
+	<select id="getFirstRecordByTypeAndCusId"  resultType="com.micro.pmo.moudle.customer.entity.CounterRecord">
+		select
+			<include refid="CounterRecordColumns"/>
+		FROM
+			counter_record as c
+		where
+			c.is_deleted = 0
+		and
+			c.counter_type = #{type}
+		and
+			cus_id = #{cusId}
+		and
+			operate_type = 0
+			
+		order by c.gmt_create
+		limit 0,1
+	</select>
+ 	
+ 	<!-- 根据id删除 -->
+ 	<update id="deleteById">
+ 		
+ 		update
+ 			counter_record
+ 		set
+ 			is_deleted = 1
+ 		where
+ 			record_id = #{value}
+ 	</update>
+</mapper>

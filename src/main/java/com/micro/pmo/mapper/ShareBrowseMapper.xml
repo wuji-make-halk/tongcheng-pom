@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.ShareBrowseMapper">
+
+	<sql id="shareBrowseColumnsNotA">
+		share_browse_id as shareBrowseId,
+		share_id as shareId,
+		cus_head as cusHead,
+		cus_nick as cusNick,
+		cus_ip as cusIp,
+		create_time as createTime
+	</sql>
+	
+	<!-- 写入查看记录 -->
+	<insert id="insertShareBrowse" parameterType="com.micro.pmo.moudle.share.entity.ShareBrowse">
+		INSERT INTO share_browse (share_id,cus_head,cus_nick,cus_ip,create_time)
+							VALUES(#{shareId},#{cusHead},#{cusNick},#{cusIp},#{createTime})
+	</insert>
+	
+	<!-- 通过ip和名称获取浏览人员查询是否重复 -->
+	<select id="findShareBrowseByIp" resultType="com.micro.pmo.moudle.share.entity.ShareBrowse">
+		SELECT
+			<include refid="shareBrowseColumnsNotA"/>
+		FROM
+			share_browse
+		WHERE
+			cus_ip = #{cusIp}
+		AND share_id = #{shareId}
+		LIMIT 0,1
+	</select>
+	<!-- 分享查看人员 -->
+	<select id="findShareBrowseByShareId" resultType="com.micro.pmo.moudle.share.entity.ShareBrowse">
+		SELECT
+			<include refid="shareBrowseColumnsNotA"/>
+		FROM
+			share_browse
+		WHERE
+			share_id = #{shareId}
+		ORDER BY
+			create_time DESC
+	</select>
+	
+</mapper>

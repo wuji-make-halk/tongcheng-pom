@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.ShareMapper">
+
+	<sql id="shareColumnsNotA">
+		share_id as shareId,
+		share_type as shareType,
+		share_name as shareName,
+		share_photo as sharePhoto,
+		share_time as shareTime,
+		cus_id as cusId
+	</sql>
+
+	<!-- 通过carId和storeId and type 获取分享 -->
+	<select id="getShareByIdAndType" resultType="com.micro.pmo.moudle.share.entity.Share">
+		SELECT
+			<include refid="shareColumnsNotA"/>
+		FROM
+			`share`
+		WHERE
+			share_type = #{shareType}
+		<if test="storeId != null">
+			AND store_id = #{storeId}
+		</if>
+		<if test="carId != null">
+			AND car_id = #{carId}
+		</if>
+		AND cus_id = #{cusId}
+		ORDER BY
+			share_time DESC
+		LIMIT 0,1
+	</select>
+	<!-- 通过用户查询分享列表 -->
+	<select id="findSharesByCusId" resultType="com.micro.pmo.moudle.share.entity.Share">
+		SELECT
+			<include refid="shareColumnsNotA"/>
+		FROM
+			`share`
+		WHERE
+			 cus_id = #{cusId}
+		ORDER BY
+			share_time DESC
+	</select>
+	<!-- 分享id获取信息 -->
+	<select id="getShareById" resultType="com.micro.pmo.moudle.share.entity.Share">
+		SELECT
+			<include refid="shareColumnsNotA"/>
+		FROM
+			`share`
+		WHERE
+			share_id = #{shareId}
+	</select>
+
+</mapper>

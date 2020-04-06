@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CusAccountMapper">
+ 
+	<sql id="CusAccountColumns">
+		c.account_id as accountId,
+		c.total_money as totalMoney,
+		c.surplus_money as surplusMoney,
+		c.freeze_money as freezeMoney,
+		c.gmt_create as gmtCreate,
+		c.gmt_lastdeal as gmtLastdeal
+	</sql>
+ 
+ 	<!-- 保存CusAccount -->
+    <insert id="insertCusAccount">
+		insert into  cus_account (account_id,total_money,surplus_money,freeze_money,gmt_create,gmt_lastdeal)
+		values (#{accountId},#{totalMoney},#{surplusMoney},#{freezeMoney},#{gmtCreate},#{gmtLastdeal})
+	</insert>
+ 
+	<!-- 根据id删除CusAccount -->
+	<update id="deleteCusAccountById">
+		update cus_account
+		set 
+			is_deleted = 1
+		where
+			account_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改CusAccount -->
+	<update id="updateCusAccountById">
+		update  cus_account set
+		  		 total_money = #{totalMoney},
+		 		 surplus_money = #{surplusMoney},
+		 		 freeze_money = #{freezeMoney},
+		 		 gmt_create = #{gmtCreate},
+		 		 gmt_lastdeal = #{gmtLastdeal}		 
+		where account_id = #{accountId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="cusAccountList" resultType="com.micro.pmo.moudle.account.entity.CusAccount">
+		SELECT
+			<include refid="CusAccountColumns"/>
+		FROM
+			 cus_account as c
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getCusAccountById" resultType="com.micro.pmo.moudle.account.entity.CusAccount">
+		SELECT
+			<include refid="CusAccountColumns"/>
+		FROM
+			 cus_account as c
+		WHERE 
+			account_id = #{value}
+	</select>
+
+	<!-- 获取账号余额 -->
+    <select id="getSurplusMoney" resultType="java.math.BigDecimal">
+    	select
+    		c.surplus_money as surplusMoney
+    	FROM
+			 cus_account as c
+		WHERE 
+			account_id = #{value}
+    		
+    </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.WantBuyMapper">
+
+	<sql id="wantBuyColumnsNotA">
+		want_buy_id as wantBuyId,
+		car_type as carType,
+		cus_nick as cusNick,
+		phone as phone,
+		description as description,
+		creator as creator,
+		create_time as createTime
+	</sql>
+	
+	<!-- 插入求购信息 -->
+	<insert id="intserWantBuy" parameterType="com.micro.pmo.moudle.want.entity.WantBuy"  useGeneratedKeys="true" keyProperty="wantBuyId">
+	        INSERT INTO want_buy (car_type,cus_nick,phone,description,creator,create_time,store_id,push_cus_id) 
+	        VALUES (#{carType},#{cusNick},#{phone},#{description},#{creator},#{createTime},#{storeId},#{pushCusId});
+	 </insert>
+	 <!-- 求购列表-->
+	 <select id="wantBuyByStoreIdAndCusId" resultType="com.micro.pmo.moudle.want.entity.WantBuy">
+	 	SELECT
+			w.want_buy_id as wantBuyId,
+			w.car_type as carType,
+			w.phone as phone,
+			w.description as description,
+			w.creator as creator,
+			w.create_time as createTime,
+			w.cus_nick AS cusNick
+		FROM
+			want_buy AS w
+		WHERE 1 = 1
+	 		<if test="storeId != null">
+	 			AND w.store_id = #{storeId}
+	 		</if>
+	 		<if test="pushCusId != null">
+	 			AND w.push_cus_id = #{pushCusId}
+	 		</if>
+	 	ORDER BY w.create_time DESC
+	 </select>
+	 
+	 
+</mapper>

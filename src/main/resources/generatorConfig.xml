@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+	<!-- 引入配置文件 -->
+	<properties resource="application.properties" />
+	
+	<!-- 数据库驱动 -->
+	<classPathEntry location="${mybatis.generator.jdbc-driver-location}" />
+	
+	<context id="DB2Tables" targetRuntime="MyBatis3">
+	    <!-- 默认查询对象 -->
+		<plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+			<property name="searchString" value="Example$" />
+			<property name="replaceString" value="Criteria" />
+		</plugin>
+		
+		<!-- databases -->
+		<jdbcConnection driverClass="${spring.datasource.driver-class-name}"
+			connectionURL="${spring.datasource.url}" 
+			userId="${spring.datasource.username}" 
+			password="${spring.datasource.password}">
+		</jdbcConnection>
+
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+		
+		
+		<!-- Mapper -->
+		<sqlMapGenerator targetPackage="${mybatis.generator.mapper-package}"
+			targetProject="${mybatis.generator.target-project}">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+		
+		<!-- Mapper XML -->
+		<javaClientGenerator type="XMLMAPPER"
+			targetPackage="${mybatis.generator.mapper-package}" targetProject="${mybatis.generator.target-project}">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+		
+	</context>
+	
+</generatorConfiguration>
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.ThirdSearchRecordMapper">
+ 
+	<sql id="ThirdSearchRecordColumns">
+		t.record_id as recordId,
+		t.result_id as resultId,
+		t.cus_id as cusId,
+		t.create_date as createDate,
+		t.update_date as updateDate
+	</sql>
+ 
+ 	<!-- 保存ThirdSearchRecord -->
+    <insert id="insertThirdSearchRecord">
+		insert into  third_search_record (result_id,cus_id,create_date,update_date)
+		values (#{resultId},#{cusId},#{createDate},#{updateDate})
+	</insert>
+ 
+	<!-- 根据id删除ThirdSearchRecord -->
+	<update id="deleteThirdSearchRecordById">
+		update third_search_record
+		set 
+			is_deleted = 1
+		where
+			record_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改ThirdSearchRecord -->
+	<update id="updateThirdSearchRecordById">
+		update  third_search_record set
+		  		 result_id = #{resultId},
+		 		 cus_id = #{cusId},
+		 		 create_date = #{createDate},
+		 		 update_date = #{updateDate}		 
+		where record_id = #{recordId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="thirdSearchRecordList" resultType="com.micro.pmo.moudle.third.entity.ThirdSearchRecord">
+		SELECT
+			<include refid="ThirdSearchRecordColumns"/>
+		FROM
+			 third_search_record as t
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getThirdSearchRecordById" resultType="com.micro.pmo.moudle.third.entity.ThirdSearchRecord">
+		SELECT
+			<include refid="ThirdSearchRecordColumns"/>
+		FROM
+			 third_search_record as t
+		WHERE 
+			record_id = #{value}
+	</select>
+
+</mapper>

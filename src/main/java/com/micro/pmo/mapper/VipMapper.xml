@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.VipMapper">
+ 
+ 	<sql id="vipColumns">
+		s.vip_id as vipId,
+		s.vip_price as vipPrice,
+		s.vip_duration as vipDuration,
+		s.sort as sort,
+		s.vip_title as vipTitle
+	</sql>
+ 
+ 	<!--  保存vip配置 -->
+    <insert id="insertVip" >
+		insert into sys_vip (vip_price,vip_duration,sort,vip_title)
+		values (#{vipPrice},#{vipDuration},#{sort},#{vipTitle})
+	</insert>
+ 	
+ 	<!--  根据id删除VIP配置 -->
+	<update id="deleteVipById">
+		delete  from
+			 sys_vip
+		where
+			vip_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id更新VIP配置 -->
+	<update id="updateVipById" parameterType="com.micro.pmo.moudle.vip.entity.Vip" >
+		update  sys_vip set
+		    vip_price = #{vipPrice},
+		    vip_duration = #{vipDuration},
+		    sort=#{sort}
+		where vip_id = #{vipId}
+	</update>
+	
+	<!-- 查询VIP配置 -->
+	<select id="vipList" parameterType="map" resultType="com.micro.pmo.moudle.vip.entity.Vip" >
+		SELECT
+			<include refid="vipColumns"/>
+		FROM
+			 sys_vip as s
+		order by s.sort desc 
+	</select>
+ 
+   <!-- 根据id获取VIP配置 -->
+	<select id="getVipById" parameterType="int" resultType="com.micro.pmo.moudle.vip.entity.Vip" >
+		SELECT
+			<include refid="vipColumns"/>
+		FROM
+			 sys_vip as s
+		where
+			vip_id = #{value}	
+	</select>
+	
+	
+
+</mapper>

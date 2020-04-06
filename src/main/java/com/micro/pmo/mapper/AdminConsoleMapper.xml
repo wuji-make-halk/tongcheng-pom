@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.AdminConsoleMapper">
+
+	<!-- 统计 本月成交金额， 成交总金额，本月成交总数，成交总数，本月车辆发布总数 平台 ，车辆发布总数 平台，本月注册总数 ，注册用户总数-->
+	<select id="statistic" resultType="com.micro.pmo.moudle.console.admin.vo.AdminConsoleVO">
+		select (
+		#查询所有有效用户数
+			select
+				count(1)
+			from
+				customer
+			where
+				cus_token  is not null
+			and
+				cus_status = 0	
+		)as cusTotalNum,
+		(
+		#获取本月用户记录数
+			select
+				count(1)
+			from
+			 	 customer 
+			WHERE 
+				cus_token  is not null
+			and
+				DATE_FORMAT( cus_reg_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as cusMonthNum,
+		(
+		#获取所有在平台发布的车辆数
+			select
+				count(1)
+			from
+				car_info
+			where
+				del_flag = 0
+		)as carPlatformTotalNum,
+		(
+		#获取本月在平台发布的车辆数
+			select
+				count(1)
+			from
+				car_info
+			where
+				del_flag = 0
+			and
+				DATE_FORMAT( create_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as carPlatformMonthNum,
+		totaldeal.dealTotalNum,
+		totaldeal.dealTotalMoney,
+		monthdeal.dealMonthNum,
+		monthdeal.dealMonthMoney,
+		monthDeposit.monthDepositMoney,
+		totalDeposit.totalDepositMoney,
+		
+		totalVip.totalVipMoney,
+		monthVip.monthVipMoney,
+		
+		totalOrderDeal.totalDealMoney,
+		monthOrderDeal.monthDealMoney,
+		
+		totalExtension.totalExtensionMoney,
+		monthExtension.monthExtensionMoney,
+		
+		totalFlush.totalFlushMoney,
+		monthFlush.monthFlushMoney,
+		
+		totalCollectCar.totalCollectCarMoney,
+		monthCollectCar.monthCollectCarMoney,
+		totalTopup.totalTopupMoney,
+		monthToup.monthTopupMoney
+		from
+		(
+		#查询所有成交价数量，以及总金额
+			select
+				count(1) as dealTotalNum,
+				sum(transaction_price) as dealTotalMoney 
+			from
+				(
+					select
+						transaction_price
+					from
+						car_deal
+				)as dealtotalprice
+		) as totaldeal,	
+		(
+		#查询本月所有成交价数量，以及总金额
+			select
+				count(1) as dealMonthNum,
+				sum(transaction_price) as dealMonthMoney 
+			from
+				(
+					select
+						transaction_price
+					from
+						car_deal
+						where
+					DATE_FORMAT( create_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+				)as dealmonthprice
+		) as monthdeal,
+		#查询定金本月，总金额
+		(
+			select
+				sum(cusorder.order_money) as totalDepositMoney
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 7
+			and
+				cusorder.order_status in (
+					1,2,3,4
+				)
+		)as totalDeposit,
+		(
+			select
+				sum(cusorder.order_money) as monthDepositMoney 
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 7
+			and
+				cusorder.order_status in (
+					1,2,3,4
+				)
+			and
+				DATE_FORMAT(cusorder.createTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as monthDeposit,
+		#查询VIP购买本月，总金额
+		(
+			select
+				sum(cusorder.order_money) as totalVipMoney
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 0
+			and
+				cusorder.order_status = 1
+		)as totalVip,
+		(
+			select
+				sum(cusorder.order_money) as monthVipMoney 
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 0
+			and
+				cusorder.order_status = 1
+			and
+				DATE_FORMAT(cusorder.createTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as monthVip,
+		#查询成交价购买本月，总金额
+		(
+			select
+				sum(cusorder.order_money) as totalDealMoney
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 8
+			and
+				cusorder.order_status = 1
+		)as totalOrderDeal,
+		(
+			select
+				sum(cusorder.order_money) as monthDealMoney 
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 8
+			and
+				cusorder.order_status = 1
+			and
+				DATE_FORMAT(cusorder.createTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as monthOrderDeal,
+		#查询推广购买本月，总金额
+		(
+			select
+				sum(cusorder.order_money) as totalExtensionMoney
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 1
+			and
+				cusorder.order_status = 1
+		)as totalExtension,
+		(
+			select
+				sum(cusorder.order_money) as monthExtensionMoney 
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 1
+			and
+				cusorder.order_status = 1
+			and
+				DATE_FORMAT(cusorder.createTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as monthExtension,
+		#查询购买刷新本月，总金额
+		(
+			select
+				sum(cusorder.order_money) as totalFlushMoney
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 2
+			and
+				cusorder.order_status = 1
+		)as totalFlush,
+		(
+			select
+				sum(cusorder.order_money) as monthFlushMoney 
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 2
+			and
+				cusorder.order_status = 1
+			and
+				DATE_FORMAT(cusorder.createTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as monthFlush,
+		#查询预定收车本月，总金额
+		(
+			select
+				sum(cusorder.order_money) as totalCollectCarMoney
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 4
+			and
+				cusorder.order_status = 1
+		)as totalCollectCar,
+		(
+			select
+				sum(cusorder.order_money) as monthCollectCarMoney 
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 4
+			and
+				cusorder.order_status  = 1
+			and
+				DATE_FORMAT(cusorder.createTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as monthCollectCar,
+		
+		#查询本月充值金额，总金额
+		(
+			select
+				sum(cusorder.order_money) as totalTopupMoney
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 3
+			and
+				cusorder.order_status = 1
+		)as totalTopup,
+		(
+			select
+				sum(cusorder.order_money) as monthTopupMoney 
+			from
+				cus_order as cusorder 
+			where
+				cusorder.payment_type = 3
+			and
+				cusorder.order_status = 1
+			and
+				DATE_FORMAT(cusorder.createTime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+		)as monthToup 
+	</select>
+</mapper>

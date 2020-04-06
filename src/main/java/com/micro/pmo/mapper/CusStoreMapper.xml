@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CusStoreMapper">
+
+	<sql id="cusStoreColumnsNotA">
+		cus_store_id as cusStoreId,
+		cus_id as cusId,
+		creat_time as creatTime,
+		creator as creator,
+		parent_id as "parentId",
+		cus_type as cusType,
+		store_id as storeId
+	</sql>
+	
+	<!--  <select id="cusStoreByCusId" resultType="com.micro.pmo.moudle.customer.entity.CusStore">
+	</select>-->
+	<!-- 信息写入 -->
+	<insert id="insertCusStore" parameterType="com.micro.pmo.moudle.customer.entity.CusStore">
+		INSERT INTO cus_store (cus_id,creat_time,creator,parent_id,cus_type,store_id)
+		VALUES (#{cusId},#{creatTime},#{creator},#{parentId},#{cusType},#{storeId});
+	</insert>
+	
+	<!-- 通过电话号码找用户 -->
+	<select id="findCusStoreByPhone" resultType="com.micro.pmo.moudle.customer.entity.CusStore">
+		SELECT
+			s.cus_store_id as cusStoreId,
+			s.cus_id as cusId,
+			s.creat_time as creatTime,
+			s.creator as creator,
+			s.parent_id as "parentId",
+			s.cus_type as cusType,
+			s.store_id as storeId
+		FROM
+			cus_store AS s
+		LEFT JOIN customer AS c ON c.cus_id = s.cus_id
+		WHERE
+			c.cus_phone = #{phone}
+	</select>
+	<!-- 通过用户id找微店 -->
+	<select id="findCusStoreByCusId" resultType="com.micro.pmo.moudle.customer.entity.CusStore">
+		SELECT
+			<include refid="cusStoreColumnsNotA" />	 
+		FROM
+			cus_store 
+		WHERE
+			cus_id = #{cusId}
+	</select>
+	
+	<!-- 查找微店下的员工列表 -->
+	<select id="findCusStoreByStoreId" resultType="com.micro.pmo.moudle.customer.entity.CusStore">
+		SELECT
+			c.cus_store_id AS cusStoreId,
+			c.cus_id AS cusId,
+			c.creat_time AS creatTime,
+			c.creator AS creator,
+			c.cus_type AS cusType,
+			c.store_id AS storeId,
+			a.cus_nick AS cusNick,
+			a.cus_avatar AS cusAvatar,
+			a.cus_phone AS cusPhone
+		FROM
+			cus_store AS c
+		LEFT JOIN customer AS a ON c.cus_id = a.cus_id
+		WHERE
+			c.store_id = #{storeId}
+			<if test="keyword != null and keyword != ''">
+				AND (a.cus_nick LIKE CONCAT('%',#{keyword},'%') OR a.cus_phone LIKE CONCAT('%',#{keyword},'%'))
+			</if>
+		ORDER BY
+			c.cus_type ASC,c.creat_time ASC
+	</select>
+	<!-- 通过微店id找到用户列表 -->
+	<select id="findCusStoreByStorId" resultType="com.micro.pmo.moudle.customer.entity.CusStore" >
+		SELECT
+			c.cus_store_id AS cusStoreId,
+			c.cus_id AS cusId,
+			c.creat_time AS creatTime,
+			c.creator AS creator,
+			c.cus_type AS cusType,
+			c.store_id AS storeId,
+			a.cus_nick AS cusNick,
+			a.cus_avatar AS cusAvatar,
+			a.cus_phone AS cusPhone
+		FROM
+			cus_store AS c
+		LEFT JOIN customer AS a ON c.cus_id = a.cus_id
+		WHERE
+			c.store_id = #{storeId}
+		ORDER BY
+			c.creat_time DESC
+	</select>
+	
+	<!-- 获取微店下所有员工 -->
+	<select id="findeCusIdsById" resultType="java.lang.Integer">
+		SELECT
+			cus_id AS cusId
+		FROM
+			cus_store
+		WHERE
+			store_id = #{storeId}
+	</select>
+	
+	<!-- 判断该用户是否是微店的员工 -->
+	<select id="isStoreCus" resultType="java.lang.Boolean">
+		select
+			count(1)
+		from
+			cus_store
+		where
+			cus_id = #{cusId}
+		and
+			store_id = #{storeId}
+			limit 0,1
+	</select>
+</mapper>

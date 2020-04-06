@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.DepositMapper">
+
+	<sql id="depositColumnsNotA">
+		deposit_id as depositId,
+		collect_money as collectMoney,
+		refund_money as refundMoney,
+		abnormal_refund as abnormalRefund,
+		charge_ratio as chargeRatio
+	</sql>
+	<!-- 获取订金 配置-->
+	<select id="getDeposit" resultType="com.micro.pmo.moudle.config.admin.entity.Deposit">
+		SELECT
+			<include refid="depositColumnsNotA"/>
+		FROM
+			sys_deposit
+		LIMIT 0,1
+	</select>
+	
+	<!-- 更新订金配置 -->
+	<update id="updateDeposit">
+		update
+			sys_deposit
+		set
+			collect_money = #{collectMoney},
+			refund_money = #{refundMoney},
+			abnormal_refund = #{abnormalRefund}
+		where
+			deposit_id = #{depositId}
+	</update>
+
+</mapper>

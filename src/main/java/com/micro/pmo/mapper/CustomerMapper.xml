@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CustomerMapper">
+
+	<sql id="customerColumnsNotA">
+		customer.cus_id as cusId,
+		cus_phone as cusPhone,
+		cus_nick as cusNick,
+		cus_avatar as cusAvatar,
+		cus_name as cusName,
+		cus_status as cusStatus,
+		cus_reg_time as cusRegTime,
+		cus_token as cusToken,
+		province_name as provinceName,
+		city_name as cityName,
+		device_code as deviceCode,
+		device_type as deviceType,
+		open_id as openId,
+		union_id as unionId
+	</sql>
+	
+	<!-- 查询所有用户列表 -->
+	<select id="cusList" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		SELECT
+			cus.cus_id AS cusId,
+			cus.cus_phone AS cusPhone,
+			cus.cus_nick AS cusNick,
+			cus.cus_avatar AS cusAvatar,
+			cus.cus_name AS cusName,
+			cus.cus_status AS cusStatus,
+			cus.cus_reg_time AS cusRegTime,
+			cus.province_name AS provinceName,
+			cus.city_name AS cityName,
+			ifnull(cus_store.cus_type,2) as cusType,
+			account.surplus_money as surplusMoney,
+			count(cvip.cus_vip_id) AS isvip
+		FROM
+			customer cus
+		LEFT JOIN cus_vip cvip ON 
+		(
+			cus.cus_id = cvip.cus_id  
+		AND 
+			cvip.vip_expiration_date >= date_format(now(), '%Y-%m-%d-%H-%i-%S')
+		)
+		LEFT JOIN cus_store ON (
+			cus_store.cus_id = cus.cus_id 
+		)
+		LEFT JOIN cus_account as account on(
+			cus.cus_id = account.account_id
+		)
+		<where>
+			<if test="cusNick != null and cusNick != '' ">
+				and cus.cus_nick like CONCAT('%',#{cusNick},'%')
+			</if>
+			<if test="cusPhone != null and cusPhone != ''">
+				and cus.cus_phone like CONCAT('%',#{cusPhone},'%')
+			</if>
+			<if test="city != null and city != '' and city != 'all'">
+				and cus.city_name = #{city}
+			</if>
+		</where>
+		GROUP BY
+			cus.cus_id
+		ORDER BY 
+			cus.cus_reg_time DESC
+	</select>
+
+	<!-- 通过电话号码查找用户 -->
+	<select id="findCusByPhone" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		SELECT
+			<include refid="customerColumnsNotA" />	 
+		FROM
+			customer
+		WHERE
+			cus_phone = #{cusPhone}
+	</select>
+	
+	<!-- 通过unionId查找用户 -->
+	<select id="getCusByOpenIdAndUnionId" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		SELECT
+			<include refid="customerColumnsNotA" />	 
+		FROM
+			customer
+		WHERE
+			open_id = #{openId}
+		AND union_id = #{unionId}
+	</select>
+	
+	<!-- 插入用户数据 -->
+	<insert id="insertCus" parameterType="com.micro.pmo.moudle.customer.entity.Customer"  useGeneratedKeys="true" keyProperty="cusId">
+	        INSERT INTO customer (cus_phone,cus_nick,cus_avatar,cus_status,cus_reg_time,province_name,city_name,device_code,device_type,open_id,union_id) 
+	        VALUES (#{cusPhone},#{cusNick},#{cusAvatar},#{cusStatus},#{cusRegTime},#{provinceName},#{cityName},#{deviceCode},#{deviceType},#{openId},#{unionId})
+	 </insert>
+	<!-- 通过token查找用户 -->
+	<select id="findCusByToken" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		SELECT
+			c.cus_id AS cusId,
+			c.cus_phone AS cusPhone,
+			c.cus_nick AS cusNick,
+			c.cus_avatar AS cusAvatar,
+			c.cus_name AS cusName,
+			c.cus_status AS cusStatus,
+			c.cus_reg_time AS cusRegTime,
+			c.cus_token AS cusToken,
+			c.province_name AS provinceName,
+			c.city_name AS cityName,
+			s.store_id AS storeId,
+			s.cus_type AS cusType,
+			t.surplus_money AS surplusMoney
+		FROM
+			customer AS c
+		LEFT JOIN cus_store AS s ON s.cus_id = c.cus_id
+		LEFT JOIN cus_account AS t ON c.cus_id = t.account_id
+		WHERE
+			c.cus_token = #{cusToken}
+		AND cus_status = 0
+	</select>
+	
+	<!-- 根据id修改用户 -->
+	<update id="updateCus">
+		update customer
+		<set> 
+			<if test="cusPhone != null" >
+				cus_phone = #{cusPhone},
+			</if>
+			<if test="cusNick != null" >
+				cus_nick = #{cusNick},
+			</if>
+			<if test="cusName != null" >
+				cus_name = #{cusName},
+			</if>
+			<if test="cusStatus != null" >
+				cus_status = #{cusStatus},
+			</if>
+			<if test="provinceName != null" >
+				province_name = #{provinceName},
+			</if>
+			<if test="cityName != null" >
+				city_name = #{cityName},
+			</if>
+			<if test="cusAvatar != null">
+				cus_avatar = #{cusAvatar},
+			</if>
+		</set>
+		where
+			cus_id = #{cusId}
+	</update>
+	<!-- 通过id获取信息 -->
+	<select id="getCustomerById" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		SELECT
+			cus_id AS cusId,
+			cus_phone AS cusPhone,
+			cus_nick AS cusNick,
+			cus_avatar AS cusAvatar
+		FROM
+			customer
+		WHERE
+			cus_status = 0
+		AND cus_id = #{cusId}
+	</select>
+	
+	<!--根据用户id获取头像 -->
+	<select id="getAvatarById" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		select
+			cus_avatar AS cusAvatar
+		FROM
+			customer
+		WHERE
+			cus_status = 0
+		AND cus_id = #{cusId}
+	</select>
+	
+	<!-- 通过id获取信息 -->
+	<select id="getCusAllById" resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		SELECT
+			<include refid="customerColumnsNotA" />
+		FROM
+			customer
+		WHERE
+			cus_status = 0
+		AND cus_id = #{cusId}
+	</select>
+	<!-- 获取微店下的成员  -->
+	<select id="cusListByStoreId"  resultType="com.micro.pmo.moudle.customer.entity.Customer">
+		select
+			<include refid="customerColumnsNotA" />,
+			ifnull(cus_store.cus_type,2) as cusType
+		from	
+			customer 
+		inner join  cus_store AS c 
+		ON 
+			(
+				c.store_id = #{storeId}
+			and
+				customer.cus_id = c.cus_id
+			)
+		LEFT JOIN cus_store ON (
+			cus_store.cus_id = customer.cus_id 
+		)
+	</select>
+	
+		<!-- 查找微店下的员工列表 -->
+	<select id="findCusStoreByParentId" resultType="com.micro.pmo.moudle.customer.entity.CusStore">
+		SELECT
+			c.cus_store_id AS cusStoreId,
+			c.cus_id AS cusId,
+			c.creat_time AS creatTime,
+			c.creator AS creator,
+			c.cus_type AS cusType,
+			c.store_id AS storeId,
+			a.cus_nick AS cusNick,
+			a.cus_avatar AS cusAvatar,
+			a.cus_phone AS cusPhone
+		FROM
+			cus_store AS c
+		LEFT JOIN customer AS a ON c.cus_id = a.cus_id
+		WHERE
+			c.parent_id = #{cusId}
+		ORDER BY
+			c.creat_time DESC
+	</select>
+	
+	<!-- 获取用户openId -->
+	<select id="getOpenIdByCusId" resultType="java.lang.String">
+		select
+			c.open_id as openId
+		from 
+			customer as c
+		where
+		    c.cus_id = #{cusId}
+	</select>
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.AdminCarMapper">
+
+	<sql id="carColumnsNotA">
+		car_id as carId,
+		car_type as carType,
+		brand_series as brandSeries,
+		car_color as carColor,
+		car_mileage as carMileage,
+		car_gearbox as carGearbox,
+		car_discharge as carDischarge,
+		car_old_boad_time as carOldBoadTime,
+		car_license as carLicense,
+		car_nature as carNature,
+		car_factory_time as carFactoryTime,
+		car_maturity_time as carMaturityTime,
+		key_sum as keySum,
+		province_location as provinceLocation,
+		city_location as cityLocation,
+		province_attribution as provinceAttribution,
+		city_attribution as cityAttribution,
+		cost_price as costPrice,
+		wholesale_price as wholesalePrice,
+		inter_price as interPrice,
+		micro_shop as microShop,
+		platform as platform,
+		car_status as carStatus,
+		car_describe as carDescribe,
+		fuel_type as fuelType,
+		car_img1 as carImg1,
+		car_img2 as carImg2,
+		car_img3 as carImg3,
+		purchase_tax as purchaseTax,
+		car_drLicense as carDrlicense,
+		reg_certificate as regCertificate,
+		old_idcard as oldIdcard,
+		old_car_license as oldCarLicense,
+		ncInvoice as ncInvoice,
+		ncWarranty as ncWarranty,
+		ncmManual as ncmManual,
+		carManual as carManual,
+		nciManual as nciManual,
+		calInsurance as calInsurance,
+		cbTax as cbTax,
+		isPromotion as isPromotion,
+		lower_price as lowerPrice,
+		car_age as carAge,
+		update_time as updateTime,
+		creator as creator,
+		create_time as createTime
+	</sql>
+	
+	<!-- 根据id删除 -->
+	<update id="deleteCarByCarId">
+		update 
+			car_info
+		set
+			del_flag = 1
+		where
+			car_id =#{value}	
+	</update>
+	
+	<!-- 根据id获取车辆信息 -->
+	<select id="getCarInfoById" resultType="com.micro.pmo.moudle.car.entity.Car">
+		select
+			<include refid="carColumnsNotA" />
+		from
+			car_info
+		where
+			car_id = #{value}
+	</select>
+	
+ 	<!-- 查询车辆列表 通过微店id、车辆创建者 省市 状态查询 -->
+	<select id="carList" resultType="com.micro.pmo.moudle.car.entity.Car">
+		select
+			c.car_id as carId,
+			c.car_type as carType,
+			c.brand_series as brandSeries,
+			c.car_mileage as carMieage,
+			car_old_boad_time as carOldBoadTime,
+			c.province_location as provinceLocation,
+			c.city_location as cityLocation,
+			c.micro_shop as microShop,
+			c.platform as platform,
+			c.car_status as carStatus,
+			c.inter_price as interPrice,
+			c.cost_price as costPrice,
+			c.wholesale_price as wholesalePrice 
+		from
+			car_info as c
+		<if test="(provinceName!=null and provinceName!='') or(  cityName != null and cityName !='' )">
+			inner join
+				customer as cus
+		</if>
+		<if test="storeId !=null ">
+			inner join 
+				store_car AS s
+		</if>
+	 	<trim prefix="on(" prefixOverrides="and |or " suffix=")">
+	 		<if test="(provinceName!=null and provinceName!='') or(  cityName != null and cityName !='' )">
+				and c.creator = cus.cus_id
+				<if test="provinceName!=null and provinceName!=''">
+				and
+					cus.province_name = #{provinceName}
+				</if>
+				<if test="cityName != null and cityName !=''">
+				and 
+					cus.city_name = #{cityName}
+				</if>	
+			</if>
+			<if test="storeId != null">
+				AND s.store_id = #{storeId}
+				and  c.car_id = s.car_id
+			</if>
+		</trim>
+		<where>
+			<if test="carStatus != null">
+			and
+				c.car_status = #{carStatus}
+			</if>
+			
+			<if test="keyword != null and keyword != '' ">
+			and 
+				c.brand_series like concat('%',#{keyword},'%')
+			</if>
+			<if test="cityLocation != null and cityLocation != ''">
+			and
+				c.city_location = #{cityLocation}
+			</if>
+			<if test="delFlag != null ">
+			and
+				del_flag = #{delFlag}
+			</if>
+		</where>
+		
+		order by c.create_time desc 
+	</select>
+ 
+	
+</mapper>

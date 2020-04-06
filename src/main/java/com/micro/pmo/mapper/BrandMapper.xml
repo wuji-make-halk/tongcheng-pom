@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.BrandMapper">
+
+	<sql id="brandColumnsNotA">
+		brand_id as brandId,
+		brand_name as brandName,
+		brand_img as brandImg,
+		brand_acronym as brandAcronym,
+		create_time as createTime
+	</sql>
+
+	<!-- 查找品牌 -->
+	<select id="findBrand" resultType="com.micro.pmo.moudle.brand.entity.Brand">
+		SELECT
+			brand_id AS brandId,
+			brand_name AS brandName,
+			brand_acronym AS brandAcronym
+		FROM
+			sys_brand
+		ORDER BY
+			brand_acronym ASC,
+			CAST(brand_id AS signed) DESC
+	</select>
+	
+	<!-- 品牌车型列表 -->
+	<select id="brandSeriesList" resultType="com.micro.pmo.moudle.brand.entity.Brand">
+		SELECT
+			brand_name AS brandName,
+			brand_id AS brandId
+		FROM
+			sys_brand_series
+		ORDER BY 
+			CAST(brand_series_id AS signed) DESC
+	</select>
+	<!-- 获取通过品牌id获取品牌车型 -->
+	<select id="findBrandSeriesById" resultType="com.micro.pmo.moudle.brand.entity.Brand">
+		SELECT
+			brand_series_id AS brandId,
+			brand_name AS brandName
+		FROM
+			sys_brand_series
+		WHERE
+			brand_id = #{brandId}
+		ORDER BY CAST(brand_series_id AS signed)  DESC
+	</select>
+	<!-- 获取通过品牌车型id获取品牌车型详情 -->
+	<select id="findBrandSeriesInfosById" resultType="com.micro.pmo.moudle.brand.entity.Brand">
+		SELECT
+			series_info_id AS brandId,
+			brand_name AS brandName
+		FROM
+			sys_brand_series_info
+		WHERE
+			brand_series_id = #{brandId}
+	</select>
+</mapper>

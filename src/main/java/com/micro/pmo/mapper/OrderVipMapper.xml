@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.OrderVipMapper">
+ 
+	<sql id="OrderVipColumns">
+		o.order_vip_id as orderVipId,
+		o.cus_id as cusId,
+		o.vip_price as vipPrice,
+		o.vip_config_id as vipConfigId,
+		o.vip_num as vipNum,
+		o.total_amoun as totalAmoun,
+		o.gmt_create as gmtCreate
+	</sql>
+ 
+ 	<!-- 保存OrderVip -->
+    <insert id="insertOrderVip">
+		insert into  order_vip (order_vip_id,cus_id,vip_price,vip_config_id,vip_num,total_amoun,gmt_create)
+		values (#{orderVipId},#{cusId},#{vipPrice},#{vipConfigId},#{vipNum},#{totalAmoun},#{gmtCreate})
+	</insert>
+ 
+	<!-- 根据id删除OrderVip -->
+	<update id="deleteOrderVipById">
+		update order_vip
+		set 
+			is_deleted = 1
+		where
+			order_vip_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改OrderVip -->
+	<update id="updateOrderVipById">
+		update  order_vip set
+		  		 cus_id = #{cusId},
+		 		 vip_price = #{vipPrice},
+		 		 vip_config_id = #{vipConfigId},
+		 		 vip_num = #{vipNum},
+		 		 total_amoun = #{totalAmoun},
+		 		 gmt_create = #{gmtCreate}		 
+		where order_vip_id = #{orderVipId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="orderVipList" resultType="com.micro.pmo.moudle.order.entity.OrderVip">
+		SELECT
+			<include refid="OrderVipColumns"/>
+		FROM
+			 order_vip as o
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getOrderVipById" resultType="com.micro.pmo.moudle.order.entity.OrderVip">
+		SELECT
+			<include refid="OrderVipColumns"/>
+		FROM
+			 order_vip as o
+		WHERE 
+			order_vip_id = #{value}
+	</select>
+	
+	<!-- 根据id获取 -->
+	<select id="getOrderVipByOrderId" resultType="com.micro.pmo.moudle.order.entity.OrderVip">
+		SELECT
+			<include refid="OrderVipColumns"/>
+		FROM
+			 order_vip as o
+		WHERE 
+			order_id = #{value}
+	</select>
+	
+	<!-- 根据订单id获取vip订单记录列表 -->
+	<select id="listOrderVipByOrderIds" resultType="com.micro.pmo.moudle.order.entity.OrderVip">
+		SELECT
+			<include refid="OrderVipColumns"/>
+		FROM
+			 order_vip as o
+		WHERE 
+			o.order_id in
+			 <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                 #{item}       
+         </foreach>   
+	</select>
+
+</mapper>

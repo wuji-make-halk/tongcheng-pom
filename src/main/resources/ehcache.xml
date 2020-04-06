@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"  
+         updateCheck="false">
+         <diskStore path="../temp/pmo/ehcache" />  
+	<!-- 默认缓存配置. -->
+	<defaultCache maxEntriesLocalHeap="100" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600"
+		overflowToDisk="true" maxEntriesLocalDisk="100000" />
+
+    <!-- 系统缓存 -->
+	<cache name="sysCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true"/>
+	
+	<!-- 后台用户缓存 -->
+	<cache name="userCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true"/>
+	
+	<!-- app用户缓存 -->
+	<cache name="cusCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true"/>
+	
+</ehcache>

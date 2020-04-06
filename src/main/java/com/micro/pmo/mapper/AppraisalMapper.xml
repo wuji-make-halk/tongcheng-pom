@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.AppraisalMapper">
+
+	<sql id="appraisalColumnsNotA">
+		appraisal_id as appraisalId,
+		car_type as carType,
+		board_time as boardTime,
+		mileage as mileage,
+		contact_phone as contactPhone,
+		appraisal_describe as appraisalDescribe,
+		creator as creator,
+		create_time as createTime,
+		store_id as storeId,
+		push_cus_id pushCusId 
+	</sql>
+	
+	<!-- 插入车估价信息 -->
+	<insert id="intserAppraisal" parameterType="com.micro.pmo.moudle.appraisal.entity.Appraisal"  useGeneratedKeys="true" keyProperty="appraisalId">
+	        INSERT INTO appraisal (car_type,board_time,mileage,contact_phone,appraisal_describe,creator,create_time,store_id,push_cus_id) 
+	        VALUES (#{carType},#{boardTime},#{mileage},#{contactPhone},#{appraisalDescribe},#{creator},#{createTime},#{storeId},#{pushCusId});
+	 </insert>
+	
+	<!-- 车估价列表-->
+	 <select id="AppraisalByStoreIdAndCusId" resultType="com.micro.pmo.moudle.appraisal.entity.Appraisal">
+	 	SELECT
+			a.appraisal_id AS appraisalId,
+			a.car_type AS carType,
+			a.board_time AS boardTime,
+			a.mileage AS mileage,
+			a.contact_phone AS contactPhone,
+			appraisal_describe as appraisalDescribe,
+			a.creator AS creator,
+			a.create_time AS createTime,
+			a.store_id AS storeId,
+			a.push_cus_id AS pushCusId
+		FROM
+			appraisal AS a
+		WHERE 1 = 1
+	 		<if test="storeId != null">
+	 			AND a.store_id = #{storeId}
+	 		</if>
+	 		<if test="pushCusId != null">
+	 			AND a.push_cus_id = #{pushCusId}
+	 		</if>
+	 	ORDER BY a.create_time DESC
+	 </select>
+
+</mapper>

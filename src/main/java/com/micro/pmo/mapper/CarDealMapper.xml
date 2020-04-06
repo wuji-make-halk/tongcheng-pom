@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CarDealMapper">
+
+	<sql id="carDealColumnsNotA">
+		deal_id as dealId,
+		car_id as carId,
+		transaction_price as transactionPrice,
+		deal_type as dealType,
+		sell_type as sellType,
+		name as name,
+		phone as phone,
+		creator as creator,
+		create_time as createTime
+	</sql>
+
+	<!-- 查询条数 -->
+	<select id="findDealSize"  parameterType="com.micro.pmo.moudle.car.vo.DealVo" resultType="java.lang.Integer">
+		SELECT
+			count(d.car_id)
+		FROM
+			car_deal AS d
+		LEFT JOIN car_info AS a ON d.car_id = a.car_id
+		WHERE
+			del_flag = 0
+		<include refid="dealCarCondtion" />	 
+	</select>
+	<!-- 成交价查询条件 -->
+	<sql id="dealCarCondtion">
+		<if test="carColor != null and carColor != ''">
+			AND a.car_color = #{carColor}
+		</if>
+		<if test="carMileage != null and carMileage != ''">
+			AND a.car_mileage &lt;= #{carMileage}
+		</if>
+		<if test="provinceLocation != null and provinceLocation != ''">
+			AND a.province_location = #{provinceLocation}
+		</if>
+		<if test="cityLocation != null and cityLocation != ''">
+			AND a.city_attribution = #{cityLocation}
+		</if>
+		<if test="brandSeries != null and  brandSeries != ''">
+			AND a.brand_series like concat('%',#{brandSeries},'%') 
+		</if>
+		<if test="carOldBoadTime != null and carOldBoadTime != 0 and carOldBoadTime != ''">
+			<choose>
+				<when test="carOldBoadTime == 7">
+					AND a.car_old_boad_time <![CDATA[<=]]> #{minDate}
+				</when>
+				<otherwise>
+					AND a.car_old_boad_time BETWEEN #{minDate} AND #{maxDate}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<!-- 查询成交列表 -->
+	<select id="findDealInfoList" parameterType="com.micro.pmo.moudle.car.vo.DealVo" resultType="com.micro.pmo.moudle.car.vo.DealInfoVo">
+		SELECT
+			d.deal_id AS dealId,
+			d.transaction_price AS transactionPrice,
+			d.create_time AS createTime,
+			a.car_color AS carColor,
+			a.car_nature AS carNature,
+			a.car_mileage AS carMileage,
+			a.province_attribution AS provinceLocation,
+			a.city_attribution AS cityLocation,
+			a.brand_series AS brandSeries,
+			a.car_old_boad_time AS carBoadTime
+		FROM
+			car_deal AS d
+		LEFT JOIN car_info AS a ON d.car_id = a.car_id
+		WHERE
+			del_flag = 0
+			<include refid="dealCarCondtion" />
+		ORDER BY
+			d.create_time  DESC
+	</select>
+
+	<!-- 插入成交价信息 -->
+	<insert id="insertCarDeal" parameterType="com.micro.pmo.moudle.car.entity.CarDeal" >
+	  	INSERT INTO car_deal
+			(car_id,transaction_price,deal_type,sell_type,name,phone,creator,create_time)
+	  	VALUES
+	  		(#{carId},#{transactionPrice},#{dealType},#{sellType},#{name},#{phone},#{creator},now())
+	</insert>
+
+
+	<!--根据成交id获取成交详情-->
+	<select id="getDealInfo" resultType="com.micro.pmo.moudle.car.vo.DealInfoVo">
+		SELECT
+			d.deal_id AS dealId,
+			d.transaction_price AS transactionPrice,
+			d.create_time AS createTime,
+			a.car_color AS carColor,
+			a.car_nature AS carNature,
+			a.car_mileage AS carMileage,
+			a.province_attribution AS provinceLocation,
+			a.city_attribution AS cityLocation,
+			a.brand_series AS brandSeries,
+			a.car_old_boad_time AS carBoadTime
+		FROM
+			car_deal AS d
+		LEFT JOIN car_info AS a ON d.car_id = a.car_id
+		WHERE
+			d.deal_id = #{dealId}
+	</select>
+
+	<!-- 根据车辆id获取成交价 -->
+	<select id="listCarDealByCarId" resultType="com.micro.pmo.moudle.car.entity.CarDeal">
+		select
+			<include refid="carDealColumnsNotA" />
+		from
+			car_deal 
+		where
+			car_id = #{value}
+		order by 
+			create_time  DESC
+	</select>
+	
+	<!-- 查询客户写入成交价信息 -->
+	<select id="getCarDealByIdAndType" resultType="com.micro.pmo.moudle.car.entity.CarDeal">
+		SELECT
+			<include refid="carDealColumnsNotA" />
+		FROM
+			car_deal
+		WHERE
+			car_id = #{carId}
+		AND deal_type = #{dealType}
+		ORDER BY
+			create_time DESC
+		LIMIT 0,1
+	</select>
+	
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CarExtensionMapper">
+
+	<sql id="carExtensionColumnsNotA">
+		c.car_extension_id as carExtensionId,
+		c.extension_expiration_date as extensionExpirationDate,
+		c.order_id as orderId,
+		c.car_id as carId,
+		c.buyer as buyer,
+		c.car_extension_status as carExtensionStatus,
+		c.extension_id as extensionId,
+		c.type as type
+	</sql>
+ 	
+ 	<!-- 保存推广记录 -->
+    <insert id="insertCarExtension">
+		insert into car_extension 
+			(extension_expiration_date,order_id,car_id,buyer,car_extension_status,extension_id,operation_type,send_num,type,gmt_update)
+		values 
+			(#{extensionExpirationDate},#{orderId},#{carId},#{buyer},#{carExtensionStatus},#{extensionId},#{operationType},#{sendNum},#{type},#{gmtUpdate})
+	</insert>
+ 	
+
+ 		<!-- 根据id修改CarExtension -->
+	<update id="updateCarExtensionById">
+		update  car_extension set
+		  		 extension_expiration_date = #{extensionExpirationDate}
+		where car_extension_id = #{carExtensionId}
+	</update>
+
+	<!-- 根据car id查询有效的推广记录 -->
+	<select id="getValidExtension" resultType="com.micro.pmo.moudle.car.entity.CarExtension">
+		SELECT
+			c.extension_expiration_date as extensionExpirationDate,
+			c.car_extension_id as CarExtensionId
+		FROM
+			 car_extension as c
+		WHERE 
+			c.car_id = #{carId}
+		and
+			c.car_extension_status = 0
+		and	
+			c.type = #{type}
+		limit 0,1
+	</select>
+ 
+
+</mapper>

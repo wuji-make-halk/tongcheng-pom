@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CusAccountLogMapper">
+ 
+	<sql id="CusAccountLogColumns">
+		c.log_id as logId,
+		c.account_id as accountId,
+		c.log_source as logSource,
+		c.flow_type as flowType,
+		c.money as money,
+		c.surplus_money as surplusMoney,
+		c.order_id as orderId,
+		c.gmt_create as gmtCreate,
+		c.log_remark as logRemark,
+		c.gmt_modify as gmtModify,
+		c.pay_type as payType,
+		c.product_name as productName
+	</sql>
+ 
+ 	<!-- 保存用户账号流水 -->
+    <insert id="insertCusAccountLog">
+		insert into  cus_account_log (log_id,account_id,log_source,flow_type,money,surplus_money,order_id,gmt_create,log_remark,gmt_modify,pay_type,product_name)
+		values (#{logId},#{accountId},#{logSource},#{flowType},#{money},#{surplusMoney},#{orderId},#{gmtCreate},#{logRemark},#{gmtModify},#{payType},#{productName})
+	</insert>
+ 
+	<!-- 根据id删除用户账号流水 -->
+	<update id="deleteCusAccountLogById">
+		update cus_account_log
+		set 
+			is_deleted = 1
+		where
+			log_id = #{value}
+	</update>
+	
+	<!-- 更新流水类型以及账号剩余金额 -->
+	<update id="updateAccountByOrderId">
+		update cus_account_log
+		set 
+			flow_type = #{flowType},
+			surplus_money = #{surplusMoney}
+		where
+			order_id = #{orderId}
+	</update>
+ 
+	<!-- 查询用户账号流水 -->
+	<select id="cusAccountLogList" resultType="com.micro.pmo.moudle.account.entity.CusAccountLog">
+		SELECT
+			<include refid="CusAccountLogColumns"/>
+		FROM
+			 cus_account_log as c
+		where
+			account_id = #{value}
+		order by log_id desc
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getCusAccountLogById" resultType="com.micro.pmo.moudle.account.entity.CusAccountLog">
+		SELECT
+			<include refid="CusAccountLogColumns"/>
+		FROM
+			 cus_account_log as c
+		WHERE 
+			log_id = #{value}
+		order by gmt_create desc
+	</select>
+	
+	
+	<!-- 根据订单获取 -->
+	<select id="getCusAccountLogByOrderId" resultType="com.micro.pmo.moudle.account.entity.CusAccountLog">
+		SELECT
+			<include refid="CusAccountLogColumns"/>
+		FROM
+			 cus_account_log as c
+		WHERE 
+			order_Id = #{value}
+		order by gmt_create desc
+	</select>
+
+</mapper>

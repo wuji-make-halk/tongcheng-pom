@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CusCounterMapper">
+ 
+	<sql id="CusCounterColumns">
+		c.counter_id as counterId,
+		c.counter_type as counterType,
+		c.cus_id as cusId,
+		c.total_count as totalCount,
+		c.surplus_count as surplusCount,
+		c.gmt_create as gmtCreate,
+		c.send_count as sendCount,
+		c.buy_count as buyCount,
+		c.use_count as useCount
+	</sql>
+ 
+ 		<!-- 保存CusCounter -->
+    <insert id="insertCusCounter">
+		insert into  cus_counter (counter_type,cus_id,total_count,surplus_count,gmt_create,send_count,buy_count,use_count)
+		values (#{counterType},#{cusId},#{totalCount},#{surplusCount},#{gmtCreate},#{sendCount},#{buyCount},#{useCount})
+	</insert>
+
+ 	<!-- 根据id删除UserSend -->
+	<update id="deleteCusCounterById">
+		update cus_counter
+		set 
+			is_deleted = 1
+		where
+			counter_id = #{value}
+	</update>
+	
+ 	<!-- 根据id修改CusCounter -->
+	<update id="updateCusCounterById">
+		update  cus_counter set
+		 		 total_count = #{totalCount},
+		 		 surplus_count = #{surplusCount},
+		 		 send_count = #{sendCount},
+		 		 buy_count = #{buyCount},
+		 		 use_count = #{useCount}		 
+		where counter_id = #{counterId}
+	</update>
+	
+	<!-- 根据前台cusId以及类型来获取信息 -->
+	<select id="getValidCusCounterByTypeAndCusId"  resultType="com.micro.pmo.moudle.customer.entity.CusCounter">
+		SELECT
+			<include refid="CusCounterColumns"/>
+		FROM
+			 cus_counter as c
+		WHERE 
+			c.is_deleted = 0
+		and
+			c.counter_type = #{counterType}
+		and
+			c.cus_id = #{cusId}
+		limit 0,1
+	</select>
+
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.RefundMapper">
+ 
+	<sql id="RefundColumns">
+		r.refund_id as refundId,
+		r.refund_money as refundMoney,
+		r.real_refund_money as realRefundMoney,
+		r.cus_id as cusId,
+		r.car_id as carId,
+		r.order_id as orderId,
+		r.apply_time as applyTime,
+		r.handler as handler,
+		r.handle_time as handleTime,
+		r.refund_status as refundStatus
+	</sql>
+ 
+ 	<!-- 保存Refund -->
+    <insert id="insertRefund">
+		insert into  refund (refund_id,refund_money,real_refund_money,cus_id,car_id,order_id,apply_time,handler,handle_time,refund_status)
+		values (#{refundId},#{refundMoney},#{realRefundMoney},#{cusId},#{carId},#{orderId},#{applyTime},#{handler},#{handleTime},#{refundStatus})
+	</insert>
+ 
+	<!-- 根据id删除Refund -->
+	<update id="deleteRefundById">
+		update refund
+		set 
+			is_deleted = 1
+		where
+			refund_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改Refund -->
+	<update id="updateRefundById">
+		update  refund set
+		  		 refund_money = #{refundMoney},
+		 		 real_refund_money = #{realRefundMoney},
+		 		 cus_id = #{cusId},
+		 		 car_id = #{carId},
+		 		 order_id = #{orderId},
+		 		 apply_time = #{applyTime},
+		 		 handler = #{handler},
+		 		 handle_time = #{handleTime},
+		 		 refund_status = #{refundStatus}		 
+		where refund_id = #{refundId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="refundList" resultType="com.micro.pmo.moudle.car.entity.Refund">
+		SELECT
+			<include refid="RefundColumns"/>
+		FROM
+			 refund as r
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getRefundById" resultType="com.micro.pmo.moudle.car.entity.Refund">
+		SELECT
+			<include refid="RefundColumns"/>
+		FROM
+			 refund as r
+		WHERE 
+			refund_id = #{value}
+	</select>
+
+</mapper>

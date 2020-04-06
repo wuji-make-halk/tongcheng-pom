@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.AdminStoreMapper">
+
+	<sql id="storeColumnsNotA">
+		s.store_id as storeId,
+		s.store_name as storeName,
+		s.province_location as provinceLocation,
+		s.city_location as cityLocation,
+		s.county_location as countyLocation,
+		s.door_number as doorNumber,
+		s.store_notice as storeNotice,
+		s.store_photo as storePhoto,
+		s.store_phone as storePhone,
+		s.creator as creator,
+		s.create_time as createTime,
+		s.store_img1 as storeImg1,
+		s.store_img2 as storeImg2,
+		s.store_img3 as storeImg3
+	</sql>	
+ 
+ 	<!-- 根据区域 省市 以及关键字 查询微店列表 -->
+ 	<select id="storeList" resultType="com.micro.pmo.moudle.store.entity.Store" >
+ 		select
+ 			<include refid="storeColumnsNotA" />
+ 		from
+ 			store as s
+ 		inner join
+			customer as cus
+		on(
+			s.creator = cus.cus_id
+			<if test="provinceName!=null and provinceName!=''">
+			and
+				cus.province_name = #{provinceName}
+			</if>
+			<if test="cityName!=null and cityName !='' and cityName != 'all'">
+			and
+				cus.city_name = #{cityName}
+			</if> 
+		)
+		<where>
+	 		<if test="keyword != null and keyword !=''">
+	 		and s.store_name like CONCAT('%',#{keyword},'%') 
+	 		</if>
+	 		<if test="cityLocation != null and cityLocation !=''">
+	 		and s.city_location = #{cityLocation}
+	 		</if>
+ 		</where>
+ 		
+ 		order by s.create_time desc
+ 	</select>
+	
+
+</mapper>

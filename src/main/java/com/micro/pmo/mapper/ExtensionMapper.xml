@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.ExtensionMapper">
+	<sql id="extensionColumns">
+		s.extension_id as extensionId,
+		s.extension_duration as extensionDuration,
+		s.extension_price as extensionPrice,
+		s.sort as sort,
+		s.gmt_update as gmtUpdate
+	</sql>
+ 	
+ 	<!-- 插入推广配置 -->
+    <insert id="insertExtension" parameterType="com.micro.pmo.moudle.extension.entity.Extension">
+		insert into  sys_extension (extension_duration,extension_price,sort,gmt_update)
+		values (#{extensionDuration},#{extensionPrice},#{sort},#{gmtUpdate})
+	</insert>
+ 
+ 	<!-- 根据id删除推广配置 -->
+	<update id="deleteExtensionById" parameterType="java.lang.Integer">
+		delete  from
+			 sys_extension
+		where
+			extension_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改推广配置 -->
+	<update id="updateExtensionById" parameterType="com.micro.pmo.moudle.extension.entity.Extension" >
+		update  sys_extension set
+		  extension_duration = #{extensionDuration},
+		  extension_price = #{extensionPrice},
+		  sort = #{sort},
+	      gmt_update = #{gmtUpdate}
+		  where extension_id = #{extensionId}
+	</update>
+	
+	<!-- 查询推广配置 -->
+	<select id="extensionList" parameterType="map" resultType="com.micro.pmo.moudle.extension.entity.Extension">
+		SELECT
+			<include refid="extensionColumns"/>
+		FROM
+			 sys_extension as s
+		order by s.sort desc 
+	</select>
+ 
+ 	 <!-- 根据ID查询推广配置 -->
+	<select id="getExtensionById"  resultType="com.micro.pmo.moudle.extension.entity.Extension">
+		SELECT
+			s.extension_id as extensionId,
+			s.extension_duration as extensionDuration,
+			s.extension_price as extensionPrice
+		FROM
+			sys_extension as s
+		WHERE 
+			extension_id = #{value}
+	</select>
+</mapper>

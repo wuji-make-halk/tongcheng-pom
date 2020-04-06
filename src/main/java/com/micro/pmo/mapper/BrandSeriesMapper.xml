@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.BrandSeriesMapper">
+
+	<sql id="brandSeriesColumnsNotA">
+		brand_series_id as brandSeriesId,
+		brand_name as brandName,
+		brand_id as brandId,
+		create_time as createTime
+	</sql>
+
+	<!-- 通过品牌查找车型 -->
+	<select id="findByBrandId" resultType="com.micro.pmo.moudle.brand.entity.BrandSeries">
+		SELECT
+			brand_name AS brandName,
+			brand_id AS brandId
+		FROM
+			sys_brand_series
+		WHERE
+			brand_id = #{brandId}
+		ORDER BY create_time ASC
+	</select>
+</mapper>

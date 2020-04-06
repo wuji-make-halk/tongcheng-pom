@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.FeedbackMapper">
+
+	<sql id="feedbackColumnsNotA">
+		feedback_id as feedbackId,
+		cus_id as cusId,
+		feedback_content as feedbackContent,
+		create_time as createTime,
+		feedback_status as feedbackStatus,
+		handle_time as handleTime
+	</sql>
+	
+	<!-- 写入反馈信息 -->
+	<insert id="insertFeedback" parameterType="com.micro.pmo.moudle.feedback.entity.Feedback">
+		INSERT INTO feedback(cus_id,feedback_content,create_time,feedback_status)
+			VALUES(#{cusId},#{feedbackContent},#{createTime},#{feedbackStatus});
+	</insert>
+	
+	<!-- 查询反馈列表 -->
+	<select id="findFeedbackAll" parameterType="com.micro.pmo.moudle.feedback.vo.FeedbackVo" resultType="com.micro.pmo.moudle.feedback.entity.Feedback">
+		SELECT
+			f.feedback_id AS feedbackId,
+			f.cus_id AS cusId,
+			f.create_time AS createTime,
+			f.feedback_content AS feedbackContent,
+			f.feedback_status AS feedbackStatus,
+			f.handle_time AS handleTime,
+			c.cus_nick AS cusNick,
+			c.cus_phone AS cusPhone
+		FROM
+			feedback AS f
+		LEFT JOIN customer AS c ON f.cus_id = c.cus_id
+		WHERE 1=1
+			<if test="cusNick != null and cusNick != ''">
+				AND c.cus_nick LIKE CONCAT('%',#{cusNick},'%')
+			</if>
+			<if test="cusPhone != null and cusPhone != ''">
+				AND c.cus_phone LIKE CONCAT('%',#{cusPhone},'%')
+			</if>
+		ORDER BY f.create_time DESC
+	</select>
+</mapper>

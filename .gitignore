@@ -1,0 +1,17 @@
+# Maven
+target/
+# Eclipse
+.classpath
+.project
+.metadata
+.settings
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+# gitignore
+*.class
+bin/
+src/main/webapp/WEB-INF/classes/

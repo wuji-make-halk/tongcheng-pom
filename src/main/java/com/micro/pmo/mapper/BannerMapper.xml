@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.BannerMapper">
+
+	<sql id="bannerColumnsNotA">
+		banner_id as bannerId,
+		img_url as imgUrl,
+		creator as creator,
+		create_time as createTime,
+		img_sort as imgSort
+	</sql>
+	<!-- 保存banner -->
+	<insert id="insertBanner" parameterType="com.micro.pmo.moudle.banner.entity.Banner" useGeneratedKeys="true" keyProperty="bannerId">
+		INSERT INTO banner (img_url,creator,create_time,img_sort) 
+					VALUES (#{imgUrl},#{creator},#{createTime},#{imgSort});
+	</insert>	
+	<!-- 后台使用bannerList -->
+	<select id="getBannerList" resultType="com.micro.pmo.moudle.banner.entity.Banner">
+		SELECT
+			banner_id AS bannerId,
+			img_url AS imgUrl,
+			img_sort AS imgSort
+		FROM
+			banner
+		ORDER BY
+			img_sort ASC
+	</select>
+	<!-- app使用 -->
+	<select id="getBannerPathList" resultType="java.lang.String">
+		SELECT
+			img_url AS imgUrl
+		FROM
+			banner
+		ORDER BY
+			img_sort ASC		
+	</select>
+	<!-- 获取最后的排序参数 -->
+	<select id="getImgSort" resultType="java.lang.Integer">
+		SELECT
+			img_sort AS imgSort
+		FROM
+			banner
+		ORDER BY
+			img_sort ASC
+		LIMIT 0,1
+	</select>
+
+</mapper>

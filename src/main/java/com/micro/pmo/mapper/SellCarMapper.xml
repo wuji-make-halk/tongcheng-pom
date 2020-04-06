@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.SellCarMapper">
+
+	<sql id="sellCarColumnsNotA">
+		sell_id as sellId,
+		claim as claim,
+		phone as phone,
+		hope_price as hopePrice,
+		car_img1 as carImg1,
+		car_img2 as carImg2,
+		car_img3 as carImg3,
+		creator as creator,
+		create_time as createTime,
+		sell_status as sellStatus,
+		real_price as realPrice
+	</sql>
+	<!-- 写入数据 -->
+	<insert id="inserSellCar" parameterType="com.micro.pmo.moudle.car.entity.SellCar"  useGeneratedKeys="true" keyProperty="sellId">
+		INSERT INTO sell_car (claim,phone,hope_price,car_img1,car_img2,car_img3,creator,create_time,sell_status) 
+		VALUES(#{claim},#{phone},#{hopePrice},#{carImg1},#{carImg2},#{carImg3},#{creator},#{createTime},#{sellStatus});
+	</insert>
+	<!-- 修改买车信息 -->
+	<update id="updateSellCar" parameterType="com.micro.pmo.moudle.car.entity.SellCar">
+		UPDATE sell_car SET
+			claim = #{claim},
+			phone = #{phone},
+			hope_price = #{hopePrice},
+			car_img1 = #{carImg1},
+			car_img2 = #{carImg2},
+			car_img3 = #{carImg3}
+	  WHERE sell_id = #{sellId}
+	</update>
+	<!-- 查询详情 -->
+	<select id="sellCarInfo" resultType="com.micro.pmo.moudle.car.entity.SellCar">
+		SELECT
+			<include refid="sellCarColumnsNotA"/>
+		FROM
+			sell_car
+		WHERE
+			sell_id =#{sellCarId}
+	</select>
+	<!-- 买车列表 -->
+	<select id="sellCarList" resultType="com.micro.pmo.moudle.car.entity.SellCar">
+		SELECT
+			s.sell_id AS sellId,
+			s.claim AS claim,
+			s.phone AS phone,
+			s.hope_price AS hopePrice,
+			s.creator AS creator,
+			s.create_time AS createTime,
+			s.sell_status AS sellStatus,
+			s.real_price AS realPrice,
+			c.cus_nick AS cusNike
+		FROM
+			sell_car AS s
+		LEFT JOIN customer AS c ON c.cus_id = s.creator
+		WHERE
+			s.creator IN
+			<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			  </foreach>
+			AND FIND_IN_SET(s.sell_status,#{status})
+		ORDER BY
+			s.create_time DESC
+	</select>
+	<!-- 修改买车状态 -->
+	<update id="updateSellCarStatus">
+		UPDATE sell_car SET
+			sell_status = #{sellStatus}
+			<if test="realPrice != null">
+				,real_price = #{realPrice}
+			</if>
+		 WHERE sell_id = #{sellCarId}
+	</update>
+
+</mapper>

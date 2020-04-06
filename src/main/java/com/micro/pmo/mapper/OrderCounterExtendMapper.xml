@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.OrderCounterExtendMapper">
+ 
+	<sql id="OrderCounterExtendColumns">
+		o.order_extend_id as orderExtendId,
+		o.cus_id as cusId,
+		o.price as price,
+		o.config_id as configId,
+		o.buy_num as buyNum,
+		o.total_amoun as totalAmoun,
+		o.gmt_create as gmtCreate,
+		o.type as type,
+		o.car_id as carId
+	</sql>
+ 
+ 	<!-- 保存OrderCounterExtend -->
+    <insert id="insertOrderCounterExtend">
+		insert into  order_counter_extend (order_extend_id,cus_id,price,config_id,buy_num,total_amoun,gmt_create,type,car_id)
+		values (#{orderExtendId},#{cusId},#{price},#{configId},#{buyNum},#{totalAmoun},#{gmtCreate},#{type},#{carId})
+	</insert>
+ 
+	<!-- 根据id删除OrderCounterExtend -->
+	<update id="deleteOrderCounterExtendById">
+		update order_counter_extend
+		set 
+			is_deleted = 1
+		where
+			order_extend_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改OrderCounterExtend -->
+	<update id="updateOrderCounterExtendById">
+		update  order_counter_extend set
+		  		 cus_id = #{cusId},
+		 		 price = #{price},
+		 		 config_id = #{configId},
+		 		 buy_num = #{buyNum},
+		 		 total_amoun = #{totalAmoun},
+		 		 gmt_create = #{gmtCreate},
+		 		 type = #{type}		 
+		where order_extend_id = #{orderExtendId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="orderExtendList" resultType="com.micro.pmo.moudle.customer.entity.OrderCounterExtend">
+		SELECT
+			<include refid="OrderCounterExtendColumns"/>
+		FROM
+			 order_counter_extend as o
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getOrderCounterExtendById" resultType="com.micro.pmo.moudle.customer.entity.OrderCounterExtend">
+		SELECT
+			<include refid="OrderCounterExtendColumns"/>
+		FROM
+			 order_counter_extend as o
+		WHERE 
+			order_extend_id = #{value}
+	</select>
+
+</mapper>

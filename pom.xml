@@ -1,0 +1,361 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.micro.pmo</groupId>
+	<artifactId>pmo</artifactId>
+	<version>1.0.0</version>
+	<name>pmo</name>
+	<url>http://maven.apache.org</url>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.1.RELEASE</version>
+	</parent>
+
+	<dependencies>
+	
+		<!-- junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- spring boot starter web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+		<!-- mybatis -->
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.15</version>
+		</dependency>
+	   
+	 
+		<!-- pagehelper 分页插件 -->
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper-spring-boot-starter</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		
+		<!-- http client -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+		</dependency>
+		<!-- apache commons -->
+		<dependency>
+	       <groupId>org.apache.commons</groupId>
+	       <artifactId>commons-lang3</artifactId>
+	       <version>3.5</version>
+	    </dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+
+		<!-- tools -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.15</version>
+		</dependency>
+		    <!-- google java lib -->
+	    <dependency>
+	      <groupId>com.google.guava</groupId>
+	      <artifactId>guava</artifactId>
+	      <version>19.0</version>
+	    </dependency>
+	    <!-- GENERAL UTILS end -->
+	    <!--JWT start 用于去session化，前后端令牌颁发、认证等功能-->
+	    <dependency>
+	      <groupId>io.jsonwebtoken</groupId>
+	      <artifactId>jjwt</artifactId>
+	      <version>0.9.1</version>
+	    </dependency>
+	
+	    <dependency>
+	      <groupId>com.auth0</groupId>
+	      <artifactId>java-jwt</artifactId>
+	      <version>3.4.0</version>
+	    </dependency>
+		<!-- quartz -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-jobs</artifactId>
+			<version>2.2.3</version>
+		</dependency>
+	    <!-- CACHE begin -->
+	    <dependency>
+	      <groupId>net.sf.ehcache</groupId>
+	      <artifactId>ehcache-core</artifactId>
+	      <version>2.6.9</version>
+	    </dependency>
+	        <!-- freemarker engine -->
+		   <dependency>
+		      <groupId>org.freemarker</groupId>
+		      <artifactId>freemarker</artifactId>
+		      <version>2.3.28</version>
+		   </dependency>
+	      
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+    <!-- CACHE end -->
+		<!-- 拼音 -->
+		<dependency>
+			<groupId>com.github.stuxuhai</groupId>
+			<artifactId>jpinyin</artifactId>
+			<version>1.1.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-discovery</groupId>
+			<artifactId>commons-discovery</artifactId>
+			<version>0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis-jaxrpc</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis-saaj</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<!-- aliyun -->
+		 <dependency>
+	        <groupId>com.aliyun</groupId>
+	        <artifactId>aliyun-java-sdk-core</artifactId>
+	        <version>4.1.0</version>
+	    </dependency>
+          <!--七牛云-->
+	     <dependency>
+	      <groupId>com.qiniu</groupId>
+	      <artifactId>qiniu-java-sdk</artifactId>
+	      <version>7.2.11</version>
+	      <scope>compile</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.squareup.okhttp3</groupId>
+	      <artifactId>okhttp</artifactId>
+	      <version>3.3.1</version>
+	      <scope>compile</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.google.code.gson</groupId>
+	      <artifactId>gson</artifactId>
+	      <version>2.8.5</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.qiniu</groupId>
+	      <artifactId>happy-dns-java</artifactId>
+	      <version>0.1.4</version>
+	      <scope>compile</scope>
+    	</dependency>
+    	<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.12.1</version>
+		</dependency>
+		<!-- jdom解析xml -->
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!-- 极光推送 -->
+		<dependency>
+			<groupId>cn.jpush.api</groupId>
+			<artifactId>jpush-client</artifactId>
+			<version>3.2.17</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>cn.jpush.api</groupId>
+			<artifactId>jiguang-common</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+       <!-- 微信sdk -->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-common</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+        <!--微信登陆encryptedCode解密-->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.55</version>
+        </dependency>
+
+        <!--微信登陆encryptedCode解密-->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.55</version>
+        </dependency>
+
+        <!--微信支付依赖-->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+         <!--微信小程序依赖包-->
+		<!--微信支付依赖-->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+		<!-- 引入第查博士 -->
+		<dependency>
+			<groupId>Ice</groupId>
+			<artifactId>Ice</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/src/main/resources/SDK/com.chaboshi.api.sign-0.0.2-SNAPSHOT.jar</systemPath>
+		</dependency>
+		<!--百度车辆识别-->
+		<dependency>
+			<groupId>com.baidu.aip</groupId>
+			<artifactId>java-sdk</artifactId>
+			<version>4.8.0</version>
+		</dependency>
+		<!-- 混合开发推送处理 -->
+		<dependency>
+		    <groupId>com.gexin.platform</groupId>
+		    <artifactId>gexin-rp-sdk-http</artifactId>
+		    <version>4.1.0.4</version>
+		</dependency>
+
+	</dependencies>
+ <repositories>
+    <repository>
+        <id>getui-nexus</id>
+        <url>http://mvn.gt.igexin.com/nexus/content/repositories/releases/</url>
+    </repository>
+ </repositories>
+
+	<build>
+		<finalName>pmo</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.mybatis.generator</groupId>
+				<artifactId>mybatis-generator-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<configuration>
+					<verbose>true</verbose>
+					<overwrite>true</overwrite>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.mybatis.generator</groupId>
+						<artifactId>mybatis-generator-core</artifactId>
+						<version>1.3.2</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<includeSystemScope>true</includeSystemScope>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

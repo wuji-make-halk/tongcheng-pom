@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.ReserveCarMapper">
+
+	<sql id="reserveCarColumnsNotA">
+		reserve_id as reserveId,
+		car_color as carColor,
+		car_type as carType,
+		brand_series as brandSeries,
+		car_mileage as carMileage,
+		car_old_boad_time as carOldBoadTime,
+		car_nature as carNature,
+		car_gearbox as carGearbox,
+		region_province as regionProvince,
+		region_city as regionCity,
+		region1_province as region1Province,
+		region2_city as region2City,
+		creator as creator,
+		create_time as createTime,
+		finish_time as finishTime,
+		reserve_status as reserveStatus
+	</sql>
+
+	<!--添加收车内容-->
+	<insert id="insertReserve" parameterType="com.micro.pmo.moudle.car.entity.ReserveCar">
+		INSERT INTO reserve_car
+			(car_color,car_type,brand_series,car_mileage,car_old_boad_time,car_nature,car_gearbox,region_province,region_city,region1_province,region2_city,reserve_status,creator,create_time)
+		VALUES
+			(#{carColor},#{carType},#{brandSeries},#{carMileage},#{carOldBoadTime},#{carNature},#{carGearbox},#{regionProvince},#{regionCity},#{region1Province},#{region2City},#{reserveStatus},#{creator},#{createTime})
+	</insert>
+	<!-- 预订收车 -->
+	<update id="updateReserveCar" parameterType="com.micro.pmo.moudle.car.entity.ReserveCar">
+		UPDATE 
+			reserve_car
+		SET  
+			car_color = #{carColor},
+			car_type = #{carType},
+			brand_series = #{brandSeries},
+			car_mileage = #{carMileage},
+			car_old_boad_time = #{carOldBoadTime},
+			car_nature = #{carNature},
+			car_gearbox = #{carGearbox},
+			region_province = #{regionProvince},
+			region_city = #{regionCity},
+			region1_province = #{region1Province},
+			region2_city = #{region2City}
+		WHERE
+			reserve_id = #{reserveId}
+	</update>
+	<!-- 获取详情，用于修改 -->
+	<select id="getReserveCarById" resultType="com.micro.pmo.moudle.car.entity.ReserveCar">
+		SELECT
+			<include refid="reserveCarColumnsNotA"/>
+		FROM
+			reserve_car
+		WHERE
+			reserve_id = #{reserveId}
+	</select>
+	
+	<!--根据收购Id和收车状态查询用户心愿数量-->
+	<select id="getReserverByCusId"  resultType="java.lang.Integer">
+		SELECT
+			count(reserve_id)
+		FROM
+			reserve_car
+		WHERE
+			creator = #{creatorId}
+		<if test="reserveStatus != null">
+			AND	reserve_status = #{reserveStatus}
+		</if>
+
+	</select>
+
+	<!--根据创建人id查询心愿列表-->
+	<select id="getReserveList" resultType="com.micro.pmo.moudle.car.entity.ReserveCar">
+		SELECT
+			reserve_id as reserveId,
+			car_color as carColor,
+			car_type as carType,
+			brand_series as brandSeries,
+			reserve_id as reserveId,
+			car_color as carColor,
+			car_type as carType,
+			brand_series as brandSeries,
+			car_mileage as carMileage,
+			car_old_boad_time as carOldBoadTime,
+			car_nature as carNature,
+			car_gearbox as carGearbox,
+			region_province as regionProvince,
+			region_city as regionCity,
+			region1_province as region1Province,
+			region2_city as region2City,
+			create_time as createTime
+		FROM
+			reserve_car
+		WHERE
+			creator = #{creatorId}
+		<if test="reserveStatus != null">
+			AND reserve_status = #{reserveStatus}
+		</if>
+		ORDER BY
+			create_time DESC
+	</select>
+
+	<!--根据收购Id更新-->
+	<update id="updateReserveStatus">
+		UPDATE reserve_car
+		SET
+			reserve_status = #{reserveStatus},
+			finish_time = #{finishTime}
+		WHERE
+			reserve_id = #{reserveId}
+	</update>
+	<!-- 心愿单列表 -->
+	<select id="getReserver" resultType="com.micro.pmo.moudle.car.entity.ReserveCar">
+		SELECT
+			reserve_id as reserveId,
+			car_color as carColor,
+			car_type as carType,
+			brand_series as brandSeries,
+			car_mileage as carMileage,
+			car_old_boad_time as carOldBoadTime,
+			car_nature as carNature,
+			car_gearbox as carGearbox,
+			creator as creator,
+			create_time as createTime,
+			finish_time as finishTime,
+			reserve_status as reserveStatus
+		FROM
+			reserve_car
+		WHERE
+			reserve_id = #{reserveId}
+	</select>
+	<!-- 预订收车匹配车辆 -->
+	<select id="reserveMatchingCar" parameterType="com.micro.pmo.moudle.car.entity.ReserveCar"  resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+		SELECT
+			car_id AS carId,
+			brand_series AS brandSeries,
+			province_location AS provinceLocation,
+			city_location AS cityLocation,
+			inter_price AS interPrice,
+			car_img1 AS carImg1,
+			micro_shop AS microShop,
+			platform AS platform,
+			car_old_boad_time AS carOldBoadTime
+		FROM
+			car_info
+		WHERE
+			del_flag = 0
+		AND car_status = 1
+		AND platform = 1
+		AND car_type = #{carType}
+		AND car_color = #{carColor}
+		AND car_mileage <![CDATA[<=]]> #{carMileage}
+		<if test="carOldBoadTime != 0">
+			<choose>
+				<when test="carOldBoadTime == 7">
+					AND car_old_boad_time <![CDATA[<=]]> #{minDate}
+				</when>
+				<otherwise>
+					AND car_old_boad_time BETWEEN #{minDate} AND #{maxDate}
+				</otherwise>
+			</choose>
+		</if>
+		AND FIND_IN_SET(city_location, #{regionProvince})
+		AND brand_series LIKE CONCAT('%', #{brandSeries}, '%')
+		<if test="carNature !=null and carNature !=''">
+			AND car_nature = #{carNature}
+		</if>
+		<if test="carGearbox != null and carGearbox !=''">
+			AND car_gearbox = #{carGearbox}
+		</if>
+	</select>
+	
+</mapper>

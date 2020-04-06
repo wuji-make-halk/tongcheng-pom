@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CounterConfigMapper">
+ 
+	<sql id="CounterConfigColumns">
+		s.config_id as configId,
+		s.config_type as configType,
+		s.config_num as configNum,
+		s.gmt_create as gmtCreate,
+		s.config_price as configPrice
+	</sql>
+ 
+ 	<!-- 保存CounterConfig -->
+    <insert id="insertCounterConfig">
+		insert into  sys_counter_config (config_type,config_num,gmt_create,config_price)
+		values (#{configType},#{configNum},#{gmtCreate},#{configPrice})
+	</insert>
+ 
+	<!-- 根据id删除CounterConfig -->
+	<update id="deleteCounterConfigById">
+		update sys_counter_config
+		set 
+			is_deleted = 1
+		where
+			config_id = #{value}
+	</update>
+ 
+ 	<!-- 根据id修改CounterConfig -->
+	<update id="updateCounterConfigById">
+		update  sys_counter_config set
+		 		 config_price = #{configPrice}
+		where config_id = #{configId}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="counterConfigList" resultType="com.micro.pmo.moudle.config.admin.entity.CounterConfig">
+		SELECT
+			<include refid="CounterConfigColumns"/>
+		FROM
+			 sys_counter_config as s
+		where 
+			is_deleted = 0
+	</select>
+	
+	
+	<!-- 根据id获取 -->
+	<select id="getCounterConfigById" resultType="com.micro.pmo.moudle.config.admin.entity.CounterConfig">
+		SELECT
+			<include refid="CounterConfigColumns"/>
+		FROM
+			 sys_counter_config as s
+		WHERE 
+			config_id = #{value}
+	</select>
+ 
+	<!-- 根据类型获取有效的配置信息 -->
+	<select id="getValidCounterConfigByType" resultType="com.micro.pmo.moudle.config.admin.entity.CounterConfig">
+		select
+			<include refid="CounterConfigColumns"/>
+		from
+			 sys_counter_config as s
+		WHERE 
+			is_deleted = 0 
+		and
+			config_type = #{value}
+	</select>
+	
+	<!-- 根据类型获取购买信息 -->
+	<select id="getBuyInfoByType" resultType="com.micro.pmo.moudle.config.admin.entity.CounterConfig">
+		select
+			s.config_id as configId,
+			s.config_type as configType,
+			s.config_num as configNum,
+			s.config_price as configPrice
+		from
+			 sys_counter_config as s
+		WHERE 
+			is_deleted = 0 
+		and
+			config_type = #{value}
+	</select>
+
+</mapper>

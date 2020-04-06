@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.OrderMapper">
+
+	<sql id="orderColumnsNotA">
+		c.order_id as orderId,
+		c.order_money as orderMoney,
+		c.payment_type as paymentType,
+		c.cus_id as cusId,
+		c.weixin_prepay_id as weixinPrepayId,
+		c.weixin_transaction_id as weixinTransactionId,
+		c.weixin_refund_id as weixinRefundId,
+		c.alipay_pay_id as alipayPayId,
+		c.order_status as orderStatus,
+		c.refund_amount as refundAmount,
+		c.createTime as createTime,
+		c.finish_time as finishTime,
+		c.refund_time as refundTime,
+		c.payment_mode as paymentMode,
+		c.service_charge as serviceCharge,
+		c.create_ip as createIp,
+		c.order_remark as orderRemark
+	</sql>
+	
+	<!-- 保存订单 -->
+    <insert id="insertOrder">
+		insert into  cus_order (order_id,order_money,payment_type,cus_id,weixin_prepay_id,alipay_pay_id,order_status,refund_amount,createTime,finish_time,refund_time,payment_mode,service_charge,create_ip,order_remark)
+		values (#{orderId},#{orderMoney},#{paymentType},#{cusId},#{weixinPrepayId},#{alipayPayId},#{orderStatus},#{refundAmount},#{createTime},#{finishTime},#{refundTime},#{paymentMode},#{serviceCharge},#{createIp},#{orderRemark})
+	</insert>
+	
+	<!-- 根据订单ID查询订单 -->
+	<select id="getOrderById" resultType="com.micro.pmo.moudle.order.entity.Order">
+		SELECT
+			<include refid="orderColumnsNotA" />	 
+		FROM
+			cus_order as c
+		WHERE
+			order_id = #{orderId}
+	</select>
+	
+	<!-- 根据订单id改变订单状态 -->
+	<update id="updateOrderStatusById" >
+	    update 
+	    	cus_order 
+	    set 
+	        order_status = #{status},
+	       	finish_time = NOW()
+	    where 
+	    	order_id = #{orderId}
+   </update>
+   
+   <!-- 订单修改 -->
+   <update id="updateOrder">
+   		update 
+   			cus_order
+   		<set>
+	   			order_id = #{orderId},
+	   		<if test="weixinPrepayId != null and weixinPrepayId !='' ">
+	   			weixin_prepay_id = #{weixinPrepayId},
+	   		</if>
+	   		<if test="paymentMode !=null ">
+	   			payment_mode = #{paymentMode},
+	   		</if>
+	   		<if test="createIp !=null and createIp != ''">
+	   			create_ip = #{createIp},
+	   		</if>
+	   		<if test="orderStatus !=null ">
+	   			order_status = #{orderStatus},
+	   		</if>
+	   		<if test="refundTime !=null ">
+	   			refund_time = #{refundTime},
+	   		</if>
+	   		<if test="serviceCharge !=null ">
+	   			service_charge = #{serviceCharge},
+	   		</if>
+	   		<if test="weixinRefundId != null ">
+	   			weixin_refund_id = #{weixinRefundId},
+	   		</if>
+	   		<if test="refundAmount != null ">
+	   			refund_amount = #{refundAmount},
+	   		</if>
+   		</set>	
+   		where
+   			order_id = #{orderId}
+   </update>
+
+	<!-- 查询 -->
+	<select id="cusOrderListNotDeposit" resultType="com.micro.pmo.moudle.order.admin.vo.AdminOrderVO">
+		SELECT
+			<include refid="orderColumnsNotA"/>,
+			extend.price as unitPrice,
+			extend.buy_num as buyNum,
+			ovip.vip_price as vipPrice,
+			ovip.vip_num as vipNum,
+			cus.cus_nick as cusNick,
+			cus.cus_phone as cusPhone
+		FROM
+			 cus_order as c
+		inner join
+			 customer as cus	
+		on
+			(
+				c.cus_id = cus.cus_id
+				<if test="cusPhone !=null and cusPhone != ''">
+			and cus.cus_phone like concat('%',#{cusPhone},'%')
+				</if>
+				<if test="cusName != null and cusName != ''">
+			and	cus.cus_name like concat('%',#{cusName},'%')
+				</if>
+				<if test="cityName != null and cityName != '' and cityName !='all' and cityName != '全国'">
+			and	cus.city_name = #{cityName}
+				</if>
+			)
+		left join 
+			order_counter_extend as extend
+		on
+			(
+				extend.order_extend_id = c.order_id
+			)
+		left join 
+			order_vip as ovip
+		on
+			(
+				ovip.order_vip_id = c.order_id
+			)
+		where
+			c.payment_type != 7
+			<if test="orderPayType != null and orderPayType != ''">
+				and c.payment_type = #{orderPayType}
+			</if>
+			<if test="orderStatus != null ">
+				and c.order_status = #{orderStatus}
+			</if>
+			<if test="orderPayMode != null ">
+				and c.payment_mode = #{orderPayMode}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				and c.order_id LIKE CONCAT('%',#{orderId},'%')
+			</if>
+			<choose>
+				<when test="queryEnd != null and queryStart != null">
+					and unix_timestamp(c.createTime) &lt; unix_timestamp(#{queryEnd}) 
+					and unix_timestamp(c.createTime) &gt; unix_timestamp(#{queryStart})
+				</when>
+				<otherwise>
+					<if test="queryEnd !=null and queryStart ==null ">
+						and unix_timestamp(c.createTime) &lt; unix_timestamp(#{queryEnd})
+					</if>
+					<if test="queryEnd ==null and queryStart !=null ">
+						and unix_timestamp(c.createTime) &gt; unix_timestamp(#{queryStart})
+					</if>
+				</otherwise>
+			</choose>
+			ORDER BY
+				c.createTime DESC
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.pmo.mapper.CarMapper">
+
+	<sql id="carColumnsNotA">
+		car_id as carId,
+		car_type as carType,
+		brand_series as brandSeries,
+		car_color as carColor,
+		car_mileage as carMileage,
+		car_gearbox as carGearbox,
+		car_discharge as carDischarge,
+		car_old_boad_time as carOldBoadTime,
+		car_license as carLicense,
+		car_nature as carNature,
+		car_factory_time as carFactoryTime,
+		car_maturity_time as carMaturityTime,
+		key_sum as keySum,
+		province_location as provinceLocation,
+		city_location as cityLocation,
+		province_attribution as provinceAttribution,
+		city_attribution as cityAttribution,
+		cost_price as costPrice,
+		wholesale_price as wholesalePrice,
+		inter_price as interPrice,
+		micro_shop as microShop,
+		platform as platform,
+		car_status as carStatus,
+		car_describe as carDescribe,
+		fuel_type as fuelType,
+		car_img1 as carImg1,
+		car_img2 as carImg2,
+		car_img3 as carImg3,
+		purchase_tax as purchaseTax,
+		car_drLicense as carDrlicense,
+		reg_certificate as regCertificate,
+		old_idcard as oldIdcard,
+		old_car_license as oldCarLicense,
+		ncInvoice as ncInvoice,
+		ncWarranty as ncWarranty,
+		ncmManual as ncmManual,
+		carManual as carManual,
+		nciManual as nciManual,
+		calInsurance as calInsurance,
+		cbTax as cbTax,
+		isPromotion as isPromotion,
+		lower_price as lowerPrice,
+		car_age as carAge,
+		update_time as updateTime,
+		creator as creator,
+		create_time as createTime,
+		car_vin as carVin,
+		engine_number as engineNumber,
+		is_order as isOrder
+	</sql>
+	
+	<!-- 新增车辆信息 -->
+	<insert id="insertCar" parameterType="com.micro.pmo.moudle.car.entity.Car"  useGeneratedKeys="true" keyProperty="carId">
+		INSERT INTO car_info (car_type,brand_series,car_color,car_mileage,car_gearbox,car_discharge,car_old_boad_time,car_license,
+		car_nature,car_factory_time,car_maturity_time,key_sum,province_location,city_location,province_attribution,city_attribution,cost_price,
+		wholesale_price,inter_price,micro_shop,platform,car_status,car_img1,car_img2,car_img3,purchase_tax,car_drLicense,reg_certificate,old_idcard,
+		old_car_license,ncInvoice,ncWarranty,ncmManual,carManual,nciManual,calInsurance ,cbTax,isPromotion,lower_price,update_time,creator,create_time,del_flag,
+		car_describe,fuel_type,car_age,car_vin,engine_number) 
+		VALUES (#{carType},#{brandSeries},#{carColor},#{carMileage},#{carGearbox},#{carDischarge},#{carOldBoadTime},#{carLicense},#{carNature},#{carFactoryTime},#{carMaturityTime},
+				#{keySum},#{provinceLocation},#{cityLocation},#{provinceAttribution},#{cityAttribution},#{costPrice},#{wholesalePrice},#{interPrice},#{microShop},#{platform},
+				#{carStatus},#{carImg1},#{carImg2},#{carImg3},#{purchaseTax},#{carDrlicense},#{regCertificate},#{oldIdcard},#{oldCarLicense},#{ncInvoice},#{ncWarranty},
+				#{ncmManual},#{carManual},#{nciManual},#{calInsurance},#{cbTax},#{isPromotion},#{lowerPrice},#{updateTime},#{creator},#{createTime},#{delFlag},#{carDescribe},#{fuelType},#{carAge},#{carVin},#{engineNumber});
+	</insert>
+	
+	<!-- 修改车辆信息 -->
+	<update id="updateCarById" parameterType="com.micro.pmo.moudle.car.entity.Car">
+		UPDATE car_info SET
+					car_type = #{carType},
+					brand_series = #{brandSeries},
+					car_color = #{carColor},
+					car_mileage = #{carMileage},
+					car_gearbox = #{carGearbox},
+					car_discharge = #{carDischarge},
+					car_old_boad_time = #{carOldBoadTime},
+					car_license = #{carLicense},
+					car_nature = #{carNature},
+					car_factory_time = #{carFactoryTime},
+					car_maturity_time = #{carMaturityTime},
+					key_sum = #{keySum},
+					province_location = #{provinceLocation},
+					city_location = #{cityLocation},
+					province_attribution = #{provinceAttribution},
+					city_attribution = #{cityAttribution},
+					cost_price = #{costPrice},
+					wholesale_price = #{wholesalePrice},
+					inter_price = #{interPrice},
+					micro_shop = #{microShop},
+					platform = #{platform},
+					car_describe = #{carDescribe},
+					fuel_type = #{fuelType},
+					car_img1 = #{carImg1},
+					car_img2 = #{carImg2},
+					car_img3 = #{carImg3},
+					purchase_tax = #{purchaseTax},
+					car_drLicense = #{carDrlicense},
+					reg_certificate = #{regCertificate},
+					old_idcard = #{oldIdcard},
+					old_car_license = #{oldCarLicense},
+					ncInvoice = #{ncInvoice},
+					ncWarranty = #{ncWarranty},
+					ncmManual = #{ncmManual},
+					carManual = #{carManual},
+					nciManual = #{nciManual},
+					calInsurance = #{calInsurance},
+					cbTax = #{cbTax},
+					car_age = #{carAge},
+					lower_price = #{lowerPrice},
+					car_status = #{carStatus},
+					car_vin = #{carVin},
+					engine_number = #{engineNumber},
+					update_time = #{updateTime}
+		WHERE car_id = #{carId}
+	</update>
+	
+	<!-- 车辆详情 -->
+	<select id="carInfoById" resultType="com.micro.pmo.moudle.car.entity.Car">
+		SELECT
+			<include refid="carColumnsNotA"/>
+		FROM
+			car_info
+		WHERE
+			car_id = #{carId}
+	</select>
+	<!-- 订金车辆详情 -->
+	<select id="getDepositCarById" resultType="com.micro.pmo.moudle.car.entity.Car">
+		SELECT
+			c.car_id AS carId,
+			c.car_type AS carType,
+			c.brand_series AS brandSeries,
+			c.car_mileage AS carMieage,
+			car_old_boad_time AS carOldBoadTime,
+			c.province_location AS provinceLocation,
+			c.city_location AS cityLocation,
+			c.inter_price AS interPrice,
+			c.cost_price AS costPrice,
+			c.car_img1 AS carImg1,
+			c.car_discharge AS carDischarge,
+			c.micro_shop AS microShop,
+			c.platform AS platform,
+			c.creator AS creator,
+			c.update_time AS updateTime,
+			c.car_mileage as carMileage
+		FROM
+			car_info AS c
+		WHERE
+			c.car_id = #{carId}
+		AND c.car_status = 1
+		AND c.del_flag = 0
+	</select>
+
+	<!-- 修改是否推广 -->
+ 	<update id="updateIsPromotionByCarId" >
+ 		update 
+ 			car_info
+ 		set
+ 			isPromotion = #{isPromotion}
+ 		where
+ 			car_id = #{carId}
+ 	</update>
+ 	
+ 		
+ 	<!-- 修改刷新时间 -->
+ 	<update id="updateFlushDateByCarId" >
+ 		update 
+ 			car_info
+ 		set
+ 			update_time =#{flushDate}
+ 		where
+ 			car_id = #{carId}
+ 	</update>
+ 	
+ 	<!-- 根据 status 查询已上架car列表 -->
+	<select id="extensionCarList" resultType="com.micro.pmo.moudle.extension.vo.ExtensionCarVO">
+		select
+			c.car_id as carId,
+			c.car_type as carType,
+			c.brand_series as brandSeries,
+			c.car_mileage as carMieage,
+			c.car_old_boad_time as carOldBoadTime,
+			c.province_location as provinceLocation,
+			c.city_location as cityLocation,
+			c.inter_price as interPrice,
+			c.cost_price as costPrice,
+			c.car_img1 as carImg1,
+			c.car_discharge as carDischarge,
+			c.micro_shop as microShop,
+			c.platform as platform,
+			e.car_extension_id as  carExtensionId,
+			e.extension_expiration_date as expireDate,
+			e.type as type
+		from
+			car_info as c
+		left join
+			car_extension as e
+		on
+			(
+			e.car_extension_status = 0
+		and	
+			e.car_id = c.car_id
+		and
+			e.extension_expiration_date > now()
+			)
+		where
+			c.creator = #{cusId}
+		and
+			c.car_status = #{status}
+		and
+			del_flag = 0
+		and 
+			platform = 1
+	</select>
+ 
+  	<!-- 找车 -->
+	<select id="findCar" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+		select
+			c.car_id as carId,
+			c.car_type as carType,
+			c.brand_series as brandSeries,
+			c.car_mileage as carMieage,
+			car_old_boad_time as carOldBoadTime,
+			c.province_location as provinceLocation,
+			c.city_location as cityLocation,
+			c.inter_price as interPrice,
+			c.cost_price as costPrice,
+			c.car_img1 as carImg1,
+			c.car_discharge as carDischarge,
+			c.micro_shop as microShop,
+			c.platform as platform,
+			c.create_time as createTime,
+			c.car_age as carAge,
+			ex.gmt_update as lastExtensionDate,
+			ex.type as extensionType
+		from
+			car_info as c
+		left join
+			car_extension as ex
+		on
+			(
+				c.car_id = ex.car_id
+			and
+				ex.car_extension_status = 0
+			and
+				ex.extension_expiration_date > now()
+			)
+	 	where
+			c.platform = 1
+		and
+			c.car_status = 1
+		and
+		  	c.del_flag = 0
+		<if test="provinceLocation !=null and provinceLocation != ''">
+		and
+			c.province_location = #{provinceLocation}
+		</if>
+		
+		<if test="cityLocation != null and cityLocation!=''">
+		and
+			c.city_location = #{cityLocation}
+		</if>
+		
+		<if test="keyword != null and keyword != '' ">
+		and 
+			c.brand_series like concat('%',#{keyword},'%')
+		</if>
+		
+		<if test="brandSeries != null and brandSeries != ''">
+		and
+			c.brand_series like concat('%',#{brandSeries},'%')
+		</if>
+		
+		<if test="startPrice != null and endPrice != null ">
+		and	
+			c.inter_price between #{startPrice} and #{endPrice}
+		</if>
+	
+		<if test="startPrice !=null and endPrice ==null and priceBelow != null">
+		and
+			c.inter_price 
+				<choose>
+					<when test="priceBelow">&lt;=</when>
+					<otherwise>&gt;=</otherwise>
+				</choose>#{startPrice}
+		</if>
+		<choose>
+			<when test="startAgeTime !=null and endAgeTime != null">
+			and
+				c.car_old_boad_time between #{startAgeTime} and #{endAgeTime}
+			</when>
+			<when test="startAgeTime != null and endAgeTime == null">
+			and
+				c.car_old_boad_time &lt;= #{startAgeTime}
+			</when>
+		</choose>
+ 
+	    order by  
+	    		<choose>
+		    		<when test="sortType == 'inter_price'">
+		    			inter_price IS NULL,
+		    			<if test="sort == 0">
+		    				c.inter_price asc,
+		    			</if>
+						<if test="sort == 1">
+							c.inter_price desc,
+						</if>
+						<include refid="findCarConditionA"/>
+					</when>
+		    		<when test="sortType == 'car_age'">
+			    		<if test="sort == 0">
+			    			c.car_age asc,
+			    		</if>
+						<if test="sort == 1">
+							c.car_age desc,
+						</if>
+						<include refid="findCarConditionA"/>
+		    		</when>
+		    		<otherwise>
+		    			<include refid="findCarConditionA"/>
+		    		</otherwise>
+	    		</choose>
+				
+	</select>
+	<sql id="findCarConditionA">
+		extensionType IS NULL,
+		extensionType ASC,
+		c.update_time DESC
+	</sql>
+	
+	<!-- 车辆管理查询 -->
+	<select id="getCarListByStatusAndId" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+		SELECT
+			c.car_id AS carId,
+			c.car_type AS carType,
+			c.brand_series AS brandSeries,
+			c.car_mileage AS carMieage,
+			c.car_old_boad_time as carOldBoadTime,
+			c.province_location AS provinceLocation,
+			c.city_location AS cityLocation,
+			c.inter_price AS interPrice,
+			c.cost_price AS costPrice,
+			c.car_img1 AS carImg1,
+			c.car_discharge AS carDischarge,
+			c.micro_shop AS microShop,
+			c.platform AS platform,
+			c.create_time AS createTime,
+			c.is_order as isOrder,
+			c.creator AS creator
+		FROM
+			car_info AS c
+		WHERE
+			c.del_flag = 0
+		AND c.car_status = #{carStatus}
+		<if test="cusIds != null and cusIds.size > 0">
+			AND c.creator IN
+			<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			  </foreach>
+		</if>
+		<if test="cusId != null">
+			AND c.creator = #{cusId}
+		</if>
+		<if test="keyword != null and keyword != '' ">
+			AND c.brand_series like concat('%',#{keyword},'%')
+		</if>
+		ORDER BY
+			c.update_time DESC,
+			c.create_time DESC
+	</select>
+	
+	<!-- 分享车源类型 -->
+	<select id="shareCarListByCarIds" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+		SELECT
+			c.car_id AS carId,
+			c.car_type AS carType,
+			c.brand_series AS brandSeries,
+			c.car_mileage AS carMieage,
+			c.car_old_boad_time as carOldBoadTime,
+			c.province_location AS provinceLocation,
+			c.city_location AS cityLocation,
+			c.inter_price AS interPrice,
+			c.cost_price AS costPrice,
+			c.car_img1 AS carImg1,
+			c.car_discharge AS carDischarge,
+			c.micro_shop AS microShop,
+			c.platform AS platform,
+			c.create_time AS createTime,
+			c.is_order as isOrder,
+			c.creator AS creator
+		FROM
+			car_info AS c
+		WHERE
+			c.del_flag = 0
+		AND FIND_IN_SET(c.car_id, #{carIds})
+		ORDER BY
+			c.create_time DESC
+	</select>
+	
+ 	
+ 	<!-- 平台用户查看车辆或微店车辆详情，找车-->
+ 	<select id="showCarInfoById" resultType="com.micro.pmo.moudle.car.vo.CarInfoVo">
+ 		SELECT
+			car_id AS carId,
+			car_type AS carType,
+			brand_series AS brandSeries,
+			car_mileage AS carMieage,
+			car_old_boad_time as carOldBoadTime,
+			province_location AS provinceLocation,
+			city_location AS cityLocation,
+			inter_price AS interPrice,
+			cost_price AS costPrice,
+			car_img1 AS carImg1,
+			car_img2 AS carImg2,
+			car_img3 AS carImg3,
+			car_discharge AS carDischarge,
+			micro_shop AS microShop,
+			platform AS platform,
+			fuel_type AS fuelType,
+			car_describe AS carDescribe,
+			car_color AS carColor,
+			creator AS creator,
+			update_time as updateTime,
+			wholesale_price as wholesalePrice,
+			is_order as isOrder,
+			customer.cus_phone as cusPhone
+		FROM
+			car_info
+		left join
+			customer
+		on
+			car_info.creator = customer.cus_id
+		WHERE
+			del_flag = 0
+		AND car_id = #{carId}
+		AND car_status = 1
+		<if test="platform != null">
+			AND platform = #{platform}
+		</if>
+		<if test="microShop != null">
+			AND micro_shop = #{microShop}
+		</if>
+		
+		limit 0,1
+ 	</select>
+ 	
+ 	<!-- 查询平台匹配车辆 -->
+ 	<select id="showCarInfosByName" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+ 		SELECT
+			car_id AS carId,
+			brand_series AS brandSeries,
+			province_location AS provinceLocation,
+			city_location AS cityLocation,
+			inter_price AS interPrice,
+			car_img1 AS carImg1,
+			micro_shop AS microShop,
+			platform AS platform
+		FROM
+			car_info
+		WHERE
+			del_flag = 0
+		AND brand_series = #{name}
+		AND car_id <![CDATA[<>]]> #{carId}
+		AND car_status = 1
+		AND platform = 1
+ 	</select>
+ 	
+ 	<!-- 微店车辆匹配 -->
+ 	<select id="getStoreMatchedCar" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+ 		SELECT
+			c.car_id AS carId,
+			c.brand_series AS brandSeries,
+			c.province_location AS provinceLocation,
+			c.city_location AS cityLocation,
+			c.inter_price AS interPrice,
+			c.car_img1 AS carImg1
+		FROM
+			store_car AS s
+		LEFT JOIN car_info AS c ON s.car_id = c.car_id  and s.store_id = #{storeId}
+		WHERE
+			c.del_flag = 0
+		AND c.car_id <![CDATA[<>]]> #{carId}
+		AND c.car_status = 1
+		AND c.micro_shop = 1
+		ORDER BY
+			s.create_time DESC
+ 	</select>
+ 	<!-- 查询个人所有车源 -->
+ 	<select id="getCarByCusId" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+ 		SELECT
+			car_id AS carId,
+			car_type AS carType,
+			brand_series AS brandSeries,
+			car_mileage AS carMieage,
+			car_old_boad_time as carOldBoadTime,
+			province_location AS provinceLocation,
+			city_location AS cityLocation,
+			inter_price AS interPrice,
+			cost_price AS costPrice,
+			car_img1 AS carImg1,
+			car_discharge AS carDischarge,
+			micro_shop AS microShop,
+			platform AS platform,
+			create_time AS createTime
+		<include refid="carByCusId"/>
+ 	</select>
+ 	
+ 	<sql id="carByCusId">
+ 		FROM
+			car_info
+		WHERE
+			del_flag = 0
+		<if test="cusIds != null and cusIds.size > 0">
+			AND creator IN
+			<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			  </foreach>
+		</if>
+		<if test="cusId != null">
+			AND creator = #{cusId}
+		</if>
+		AND car_status = 1
+		AND platform = 1
+		ORDER BY
+			create_time DESC
+ 	</sql>
+ 	<!-- 查询个人车辆条数 -->
+ 	<select id="carSizeByCusId" resultType="java.lang.Integer">
+		SELECT
+			COUNT(car_id) AS carIds
+		<include refid="carByCusId"/> 	
+ 	</select>
+ 	
+ 	<!-- 随机获取最新发布的平台车辆中的前20条中的5条 -->
+ 	<select id="favoriteCarList" resultType="com.micro.pmo.moudle.car.vo.FindCarVO">
+ 		SELECT
+			* 
+		FROM
+			(
+			SELECT
+				* 
+			FROM
+				(
+				SELECT
+					c.car_id AS carId,
+					c.car_type AS carType,
+					c.brand_series AS brandSeries,
+					c.car_mileage AS carMieage,
+					car_old_boad_time AS carOldBoadTime,
+					c.province_location AS provinceLocation,
+					c.city_location AS cityLocation,
+					c.inter_price AS interPrice,
+					c.cost_price AS costPrice,
+					c.car_img1 AS carImg1,
+					c.car_discharge AS carDischarge,
+					c.micro_shop AS microShop,
+					c.platform AS platform,
+					c.create_time AS createTime 
+				FROM
+					car_info AS c 
+				WHERE
+					c.platform = 1 
+					AND c.car_status = 1 
+					AND c.del_flag = 0 
+					<if test="cusId != null">
+					AND c.creator &lt;&gt; #{cusId}
+					</if>
+				ORDER BY
+					c.create_time 
+					LIMIT 0,60 
+				) AS twentyCar 
+			) AS twentyCar_outer
+		order by rand() limit 0,4
+ 	</select>
+ 	
+ 	<!-- 获取未上架 在售 已售 -->
+ 	<select id="carCountByStatus" resultType="com.micro.pmo.moudle.car.vo.CarCountByStatusVO">
+	 SELECT
+		( SELECT 
+			count( 1 ) 
+			FROM 
+				car_info 
+			WHERE 
+				creator in
+				<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			  </foreach>
+			AND del_flag = 0 
+			AND car_status = 0 
+		) AS notOn,
+		( SELECT 
+			count( 1 ) 
+			FROM
+				car_info 
+			WHERE 
+				creator in 
+				<foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			  </foreach>
+			AND del_flag = 0 
+			AND car_status = 1 
+		) AS onSale,
+		( SELECT
+			count( 1 ) 
+		  FROM
+			car_info 
+		  WHERE
+			  creator in
+			  <foreach collection="cusIds" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			  </foreach>
+		  AND del_flag = 0 
+		  AND car_status = 2 
+		) AS sold
+ 	</select>
+ 	
+ 	<!-- 根据车辆id修改是否已交定金 -->
+ 	<update id="updateIsOrderByCarId">
+ 		update
+ 			car_info
+ 		set
+ 			is_order = #{isOrder}
+ 		where
+ 			car_id =#{carId}
+ 	</update>
+ 	<!-- 车辆信息匹配心愿单 -->
+ 	<select id="getCarMatched" resultType="com.micro.pmo.moudle.car.vo.ReserveCarVo">
+ 		SELECT
+ 			r.reserve_id AS reserveId,
+			r.car_color AS carColor,
+			r.car_type AS carType,
+			r.brand_series AS brandSeries,
+			r.car_mileage AS carMileage,
+			r.car_old_boad_time AS carOldBoadTime,
+			r.car_nature AS carNature,
+			r.car_gearbox AS carGearbox,
+			r.region_city AS regionCity,
+			r.region2_city AS region2City,
+			c.cus_nick AS cusNick,
+			c.device_code AS deviceCode,
+			c.device_type AS deviceType
+		FROM
+			reserve_car AS r
+		LEFT JOIN customer AS c ON r.creator = c.cus_id
+		WHERE
+			r.car_type = #{carType}
+		AND r.car_old_boad_time <![CDATA[>=]]> #{boadTime}
+		AND r.car_color = #{carColor}
+		AND r.car_mileage <![CDATA[>=]]> #{carMileage} 
+		AND c.device_code IS NOT NULL
+ 	</select>
+ 	
+ 	<!-- 获取属于自己的车辆id -->
+ 	<select id="carBelongsToCus" resultType="java.lang.Integer">
+ 		SELECT
+			car_id
+		FROM
+			car_info
+		WHERE
+			del_flag = 0
+		AND creator = #{cusId}
+ 	</select>
+ 	
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE LOGBACK>
+<configuration scan="true" scanPeriod="10 seconds">
+
+	<!-- 定义常量 -->
+	<property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%c:%M:%L] [%p] - %m%n"/>
+	<property name="FILE_NAME_PATTERN" value="${LOG_PATH}/pmo.%d{yyyy-MM-dd}.log"/>
+	
+	<!-- 输出日志到控制台 -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="UTF-8">
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- 输出日志文件 -->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<encoder charset="UTF-8">
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${FILE_NAME_PATTERN}</fileNamePattern>
+			<maxHistory>60</maxHistory> 
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>50MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	
+	<!-- 根日志输出级别和目标 -->
+	<root level="info">
+		<appender-ref ref="FILE" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+	
+	<!-- 框架日志 -->
+	<logger name="org.springframework.web.servlet" level="info"/>
+	<!-- 自定义级别 -->
+	<logger name="com.micro.pmo" level="debug" />
+	<logger name="com.micro.pmo.mapper" level="warn" />
+	
+</configuration>
