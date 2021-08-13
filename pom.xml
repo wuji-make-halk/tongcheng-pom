@@ -248,14 +248,14 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.55</version>
+            <version>1.67</version>
         </dependency>
 
         <!--微信登陆encryptedCode解密-->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.55</version>
+            <version>1.67</version>
         </dependency>
 
         <!--微信支付依赖-->
